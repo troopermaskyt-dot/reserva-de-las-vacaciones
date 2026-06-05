@@ -61,7 +61,6 @@
             align-items: center;
             justify-content: center;
             color: var(--blanco);
-            transition: opacity 0.5s ease;
         }
 
         .login-box {
@@ -138,7 +137,7 @@
 
         /* --- CONTENIDO PRINCIPAL --- */
         #main-content {
-            display: none; /* Se activa tras loguearse */
+            display: none;
         }
 
         /* --- HEADER Y NAVEGACIÓN --- */
@@ -572,7 +571,7 @@
             
             <div class="login-group">
                 <label>Correo Electrónico</label>
-                <input type="email" id="login-email" placeholder="ejemplo@reserva.com" value="residente@reserva.com">
+                <input type="email" id="login-email" placeholder="ejemplo@reserva.com" oninput="validarCorreoAdmin()">
             </div>
 
             <div class="login-group">
@@ -582,6 +581,7 @@
                     <option value="Apto 202 - Torre 1">Torre 1 - Apto 202</option>
                     <option value="Apto 303 - Torre 2">Torre 2 - Apto 303</option>
                     <option value="Apto 404 - Torre 2">Torre 2 - Apto 404</option>
+                    <option value="Administrador General" id="opt-admin" style="display:none; font-weight: bold; color: var(--dorado);">★ Administrador General</option>
                 </select>
             </div>
 
@@ -610,7 +610,7 @@
                     <li><a href="#salud">Salud</a></li>
                     <li><a href="#banca">Centro Financiero</a></li>
                     <li class="user-info-nav">
-                        <i class="fa-solid fa-user-tie"></i> <span id="nav-user-display">Apto 101</span>
+                        <i class="fa-solid fa-user-tie"></i> <span id="nav-user-display">Cargando...</span>
                         <i class="fa-solid fa-right-from-bracket btn-logout" onclick="ejecutarLogout()" title="Cerrar Sesión"></i>
                     </li>
                 </ul>
@@ -709,7 +709,7 @@
                             </div>
                         </div>
 
-                    	<div class="form-group">
+                        <div class="form-group">
                             <label>2. Describe tus síntomas o dudas</label>
                             <textarea id="med-message" placeholder="Escribe aquí detalladamente lo que necesitas que el personal médico te explique..."></textarea>
                         </div>
@@ -723,7 +723,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN INTEGRADA: CENTRO FINANCIERO / BANCO CON SALDO DINÁMICO -->
+        <!-- SECCIÓN INTEGRADA: CENTRO FINANCIERO CON SALDO DINÁMICO -->
         <section class="section" id="banca">
             <div class="container split-section" style="direction: rtl;">
                 <div class="split-text" style="direction: ltr;">
@@ -745,39 +745,73 @@
         <!-- FOOTER -->
         <footer id="contacto">
             <div class="container">
-                <p>&copy; 2026 Conjunto Residential Reserva de las Vacaciones. Todos los derechos reservados.</p>
+                <p>&copy; 2026 Conjunto Residencial Reserva de las Vacaciones. Todos los derechos reservados.</p>
                 <p style="font-size: 12px; margin-top: 5px; color: var(--dorado);">Seguridad y Exclusividad Integral • Estrato 6 Colombia</p>
             </div>
         </footer>
 
     </div>
 
-    <!-- PROGRAMACIÓN LOGICA DINÁMICA (LOGIN + APARTAMENTOS + SALDOS) -->
+    <!-- PROGRAMACIÓN LOGICA DINÁMICA -->
     <script>
-        // Base de datos simulada de Saldos por Apartamento
+        // Correos con privilegios de Administrador y Dinero Infinito
+        const adminEmails = [
+            "troopermaskyt@gmail.com",
+            "floppabebereciennacido@gmail.com",
+            "gabomurcia09@gmail.com"
+        ];
+
+        // Base de datos de Saldos tradicionales por Apartamento
         const baseDatosApartamentos = {
             "Apto 101 - Torre 1": { saldo: "$345.000 COP", detalle: "Expedido el 01/06/2026 - Administración al día." },
             "Apto 202 - Torre 1": { saldo: "$1.120.000 COP", detalle: "Incluye cobro extraordinario de mantenimiento de zonas comunes." },
             "Apto 303 - Torre 2": { saldo: "$0 COP", detalle: "Cuenta en equilibrio. Próxima facturación Julio de 2026." },
-            "Apto 404 - Torre 2": { saldo: "$578.000 COP", detalle: "Saldo pendiente del mes anterior más recargo por mora." }
+            "Apto 404 - Torre 2": { saldo: "$578.000 COP", detalle: "Saldo pendiente del mes anterior más recargo por mora." },
+            "Administrador General": { saldo: "$∞ COP", detalle: "Fondos Ilimitados de Copropiedad — Cuenta Maestra de Administración General." }
         };
+
+        // Comprobación en tiempo real al escribir el correo electrónico
+        function validarCorreoAdmin() {
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const selectApt = document.getElementById('login-apt');
+            const optAdmin = document.getElementById('opt-admin');
+
+            if (adminEmails.includes(email)) {
+                // Mostrar opción admin, seleccionarla y bloquear el control para que no use otro apto
+                optAdmin.style.display = 'block';
+                selectApt.value = "Administrador General";
+                selectApt.setAttribute("disabled", "true");
+            } else {
+                // Restaurar comportamiento normal
+                selectApt.removeAttribute("disabled");
+                optAdmin.style.display = 'none';
+                if(selectApt.value === "Administrador General") {
+                    selectApt.value = "Apto 101 - Torre 1";
+                }
+            }
+        }
 
         // Función de Inicio de Sesión
         function ejecutarLogin() {
-            const email = document.getElementById('login-email').value;
-            const aptoSeleccionado = document.getElementById('login-apt').value;
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
             const pass = document.getElementById('login-pass').value;
+            let aptoSeleccionado = document.getElementById('login-apt').value;
 
             if(!email || !pass) {
-                alert("Por favor completa las credenciales.");
+                alert("Por favor completa las credenciales básicas.");
                 return;
             }
 
-            // Guardar sesión en LocalStorage para persistencia
+            // Forzar que si es un correo admin, su rol sea Administrador General
+            if(adminEmails.includes(email)) {
+                aptoSeleccionado = "Administrador General";
+            }
+
+            // Guardar sesión local
             localStorage.setItem('residente_apto', aptoSeleccionado);
             localStorage.setItem('residente_email', email);
 
-            // Cargar interfaz
+            // Cargar la interfaz de usuario
             renderizarDatosUsuario();
         }
 
@@ -790,14 +824,20 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
 
-            // Actualizar textos en barra de navegación y sección de banca
+            // Ajustar textos informativos del header y del panel financiero
             document.getElementById('nav-user-display').innerText = apto;
-            document.getElementById('saldo-titulo').innerText = `Saldo Administración - ${apto}`;
+            document.getElementById('saldo-titulo').innerText = `Estado de Cuenta — ${apto}`;
             
-            // Asignar saldo dinámico desde la BD
             if (baseDatosApartamentos[apto]) {
                 document.getElementById('saldo-valor').innerText = baseDatosApartamentos[apto].saldo;
                 document.getElementById('saldo-meta-texto').innerText = baseDatosApartamentos[apto].detalle;
+                
+                // Si tiene dinero infinito, aplicar estilo dorado de resalte al texto del saldo
+                if(apto === "Administrador General") {
+                    document.getElementById('saldo-valor').style.color = "var(--dorado)";
+                } else {
+                    document.getElementById('saldo-valor').style.color = "var(--blanco)";
+                }
             }
         }
 
@@ -808,14 +848,14 @@
             window.location.reload();
         }
 
-        // Mantener sesión al recargar la página
+        // Mantener sesión activa al recargar la página
         window.onload = function() {
             if (localStorage.getItem('residente_apto')) {
                 renderizarDatosUsuario();
             }
         };
 
-        // Validación visual de archivos para Fútbol y Gym
+        // Validación visual de archivos adjuntos (Fútbol y Gym)
         function verificarArchivo(tipo) {
             const input = document.getElementById(`${tipo}-file`);
             const label = document.getElementById(`label-${tipo}`);
@@ -825,22 +865,22 @@
             }
         }
 
-        // Lógica de Envío de Pagos (Fútbol y Gym)
+        // Lógica de Envío de Pagos por WhatsApp
         function reportarPago(tipo, celular) {
             const archivo = document.getElementById(`${tipo}-file`);
-            const aptoActual = localStorage.getItem('residente_apto') || "Apartamento No Especificado";
+            const aptoActual = localStorage.getItem('residente_apto') || "No especificado";
             let servicio = tipo === 'futbol' ? 'Reserva/Mensualidad Cancha de Fútbol' : 'Plan Mensual de Gimnasio';
             
-            let mensaje = `*Reporte de Pago - Reserva de las Vacaciones*
+            let mensaje = `*Reporte de Pago — Reserva de las Vacaciones*
 
-Hola, soy residente del *${aptoActual}* y adjunto este mensaje para reportar el pago correspondiente a: *${servicio}*.`;
+Hola, me comunico desde la cuenta de: *${aptoActual}* para reportar el pago del servicio: *${servicio}*.`;
             
             if (archivo.files.length > 0) {
                 mensaje += `
 
 _(Nota: El comprobante [${archivo.files[0].name}] está adjunto a continuación)_`;
             } else {
-                alert("Por favor, adjunta primero la foto de tu comprobante de pago.");
+                alert("Por favor, adjunta la imagen de tu comprobante primero.");
                 return;
             }
 
@@ -862,7 +902,7 @@ _(Nota: El comprobante [${archivo.files[0].name}] está adjunto a continuación)
         function enviarAlMedico() {
             const mensajeInput = document.getElementById('med-message').value;
             const fileInput = document.getElementById('med-file');
-            const aptoActual = localStorage.getItem('residente_apto') || "Apartamento No Especificado";
+            const aptoActual = localStorage.getItem('residente_apto') || "No especificado";
             const telefono = "573024058615";
             
             if(!mensajeInput.trim()) {
@@ -870,15 +910,15 @@ _(Nota: El comprobante [${archivo.files[0].name}] está adjunto a continuación)
                 return;
             }
 
-            let textoFinal = `*Consulta Médica - Reserva de las Vacaciones*
-*Residente:* ${aptoActual}
+            let textoFinal = `*Consulta Médica — Reserva de las Vacaciones*
+*Remitente:* ${aptoActual}
 
 *Detalles del caso:* ${mensajeInput}`;
             
             if(fileInput.files.length > 0) {
                 textoFinal += `
 
-_(Nota: Adjunto la foto/documento [${fileInput.files[0].name}] en el clip de este chat)_`;
+_(Nota: Adjunto la foto/documento [${fileInput.files[0].name}] en este chat)_`;
             }
 
             const url = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(textoFinal)}`;

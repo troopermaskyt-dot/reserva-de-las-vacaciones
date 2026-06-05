@@ -6,7 +6,7 @@
     <title>Conjunto Residencial Reserva de las Vacaciones</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2 family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
@@ -59,29 +59,53 @@
             align-items: center;
             justify-content: center;
             color: var(--blanco);
+            overflow-y: auto;
+            padding: 20px 0;
         }
 
         .login-box {
             background-color: var(--blanco);
             color: var(--azul-oscuro);
-            padding: 40px;
-            border-radius: 8px;
+            padding: 35px 40px;
+            border-radius: 12px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
             text-align: center;
             border-top: 5px solid var(--dorado);
+            margin: auto;
+        }
+
+        .brand-logo-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--dorado);
+        }
+
+        .brand-logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .login-box h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 26px;
+            font-size: 24px;
             margin-bottom: 5px;
+            color: var(--azul-oscuro);
         }
 
         .login-box p {
             color: var(--gris-texto);
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 25px;
         }
 
@@ -92,25 +116,28 @@
 
         .login-group label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             margin-bottom: 5px;
             letter-spacing: 0.5px;
+            color: var(--azul-oscuro);
         }
 
         .login-group input, .login-group select {
             width: 100%;
             padding: 12px;
             border: 1px solid #cbd5e1;
-            border-radius: 4px;
+            border-radius: 6px;
             font-family: inherit;
             font-size: 14px;
+            background-color: #fff;
         }
 
         .login-group input:focus, .login-group select:focus {
             outline: none;
             border-color: var(--dorado);
+            box-shadow: 0 0 0 3px rgba(180, 140, 44, 0.15);
         }
 
         .btn-login {
@@ -118,8 +145,8 @@
             background-color: var(--dorado);
             color: var(--blanco);
             border: none;
-            padding: 12px;
-            border-radius: 4px;
+            padding: 13px;
+            border-radius: 6px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -171,7 +198,7 @@
 
         .logo {
             font-family: 'Playfair Display', serif;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             color: var(--azul-oscuro);
             display: flex;
@@ -180,7 +207,7 @@
         }
 
         .logo span {
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 3px;
             color: var(--dorado);
@@ -305,6 +332,7 @@
             height: 200px;
             background-size: cover;
             background-position: center;
+            transition: background-image 0.4s ease-in-out;
         }
 
         .card-body {
@@ -528,23 +556,6 @@
             cursor: pointer;
         }
 
-        .btn-enviar-medico {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            background-color: var(--verde-whatsapp);
-            color: var(--blanco);
-            padding: 14px;
-            border: none;
-            border-radius: 4px;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
         .split-img {
             width: 100%;
             height: 540px;
@@ -565,6 +576,10 @@
 
     <div id="login-overlay">
         <div class="login-box">
+            <div class="brand-logo-container">
+                <img src="https://i.ibb.co/LvbY08F/image-6ceae0.jpg" alt="Logo Reserva de las Vacaciones" onerror="this.src='https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=150&q=80'">
+            </div>
+            
             <h2 id="form-title">Acceso Residente</h2>
             <p id="form-subtitle">Reserva de las Vacaciones — Sistema Integrado</p>
             
@@ -626,7 +641,7 @@
             </div>
             <div class="grid-amenities">
                 <div class="card">
-                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80');"></div>
+                    <div class="card-img" id="img-preview-futbol" style="background-image: url('https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=600&q=80');"></div>
                     <div class="card-body">
                         <div class="card-icon"><i class="fa-solid fa-futbol"></i></div>
                         <h3>Cancha Sintética Pro</h3>
@@ -641,7 +656,7 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80');"></div>
+                    <div class="card-img" id="img-preview-gym" style="background-image: url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80');"></div>
                     <div class="card-body">
                         <div class="card-icon"><i class="fa-solid fa-dumbbell"></i></div>
                         <h3>Gimnasio Equipado</h3>
@@ -697,197 +712,4 @@
                     <h3>Centro Financiero & Estado de Cuenta</h3>
                     <p>Privacidad, comodidad y seguridad absoluta para tus movimientos monetarios dentro de tu propio hogar.</p>
                     <div class="saldo-display-box">
-                        <h4 id="saldo-titulo">Saldo de Administración</h4>
-                        <div class="saldo-monto" id="saldo-valor">$0.00 COP</div>
-                        <div class="saldo-meta" id="saldo-meta-texto">Verificado para la unidad habitacional de manera exclusiva.</div>
-                    </div>
-                </div>
-                <img src="https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=800&q=80" alt="Lounge Bancario Privado" class="split-img" style="direction: ltr;">
-            </div>
-        </section>
-
-        <footer>
-            <div class="container">
-                <p>&copy; 2026 Conjunto Residencial Reserva de las Vacaciones. Todos los derechos reservados.</p>
-                <p style="font-size: 12px; margin-top: 5px; color: var(--dorado);">Seguridad y Exclusividad Integral • Estrato 6 Colombia</p>
-            </div>
-        </footer>
-    </div>
-
-    <script>
-        let esModoRegistro = false;
-
-        const adminEmails = [
-            "troopermaskyt@gmail.com",
-            "floppabebereciennacido@gmail.com",
-            "gabomurcia09@gmail.com"
-        ];
-
-        const baseDatosSaldosDefecto = {
-            "Apto 101 - Torre 1": { saldo: "$345.000 COP", detalle: "Expedido el 01/06/2026 - Administración al día." },
-            "Apto 202 - Torre 1": { saldo: "$1.120.000 COP", detalle: "Incluye cobro extraordinario de mantenimiento." },
-            "Apto 303 - Torre 2": { saldo: "$0 COP", detalle: "Cuenta en equilibrio uniforme." },
-            "Apto 404 - Torre 2": { saldo: "$578.000 COP", detalle: "Saldo pendiente acumulado del periodo anterior." },
-            "Administrador General": { saldo: "$∞ COP", detalle: "Fondos Ilimitados de Copropiedad — Cuenta Maestra." }
-        };
-
-        function alternarFormularios() {
-            esModoRegistro = !esModoRegistro;
-            const title = document.getElementById('form-title');
-            const submitBtn = document.getElementById('btn-submit');
-            const link = document.getElementById('toggle-link');
-
-            if(esModoRegistro) {
-                title.innerText = "Registrar Residente";
-                submitBtn.innerText = "Crear Cuenta Nueva";
-                link.innerText = "¿Ya tienes cuenta? Inicia sesión";
-            } else {
-                title.innerText = "Acceso Residente";
-                submitBtn.innerText = "Iniciar Sesión";
-                link.innerText = "¿No tienes cuenta? Regístrate aquí";
-            }
-            validarCorreoAdmin();
-        }
-
-        function validarCorreoAdmin() {
-            const email = document.getElementById('login-email').value.trim().toLowerCase();
-            const selectApt = document.getElementById('login-apt');
-            const optAdmin = document.getElementById('opt-admin');
-
-            if (adminEmails.includes(email)) {
-                optAdmin.style.display = 'block';
-                selectApt.value = "Administrador General";
-                selectApt.setAttribute("disabled", "true");
-            } else {
-                selectApt.removeAttribute("disabled");
-                optAdmin.style.display = 'none';
-                if(selectApt.value === "Administrador General") {
-                    selectApt.value = "Apto 101 - Torre 1";
-                }
-            }
-        }
-
-        function procesarFormulario() {
-            const email = document.getElementById('login-email').value.trim().toLowerCase();
-            const pass = document.getElementById('login-pass').value;
-            let apto = document.getElementById('login-apt').value;
-
-            if(!email || !pass) {
-                alert("Completa todos los campos obligatorios.");
-                return;
-            }
-
-            if(adminEmails.includes(email)) {
-                apto = "Administrador General";
-            }
-
-            let usuariosRegistrados = JSON.parse(localStorage.getItem('db_usuarios')) || {};
-
-            if (esModoRegistro) {
-                if(usuariosRegistrados[email]) {
-                    alert("Este correo electrónico ya está registrado. Por favor, inicia sesión.");
-                    return;
-                }
-                usuariosRegistrados[email] = { password: pass, apartamento: apto };
-                localStorage.setItem('db_usuarios', JSON.stringify(usuariosRegistrados));
-                alert("¡Registro Exitoso! Iniciando sesión automáticamente...");
-            } else {
-                if(!adminEmails.includes(email)) {
-                    if(!usuariosRegistrados[email] || usuariosRegistrados[email].password !== pass) {
-                        alert("Credenciales incorrectas o usuario no registrado.");
-                        return;
-                    }
-                    apto = usuariosRegistrados[email].apartamento;
-                }
-            }
-
-            localStorage.setItem('residente_apto', apto);
-            localStorage.setItem('residente_email', email);
-            renderizarDatosUsuario();
-        }
-
-        function renderizarDatosUsuario() {
-            const apto = localStorage.getItem('residente_apto');
-            if (!apto) return;
-
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-
-            document.getElementById('nav-user-display').innerText = apto;
-            document.getElementById('saldo-titulo').innerText = `Estado de Cuenta — ${apto}`;
-            
-            const datosSaldo = baseDatosSaldosDefecto[apto] || { saldo: "$500.000 COP", detalle: "Saldo base inicial para nuevos residentes registrados." };
-            
-            document.getElementById('nav-user-display').innerText = apto;
-            document.getElementById('saldo-valor').innerText = datosSaldo.saldo;
-            document.getElementById('saldo-meta-texto').innerText = datosSaldo.detalle;
-            
-            if(apto === "Administrador General") {
-                document.getElementById('saldo-valor').style.color = "var(--dorado)";
-            } else {
-                document.getElementById('saldo-valor').style.color = "var(--blanco)";
-            }
-        }
-
-        function ejecutarLogout() {
-            localStorage.removeItem('residente_apto');
-            localStorage.removeItem('residente_email');
-            window.location.reload();
-        }
-
-        window.onload = function() {
-            if (localStorage.getItem('residente_apto')) {
-                renderizarDatosUsuario();
-            }
-        };
-
-        function verificarArchivo(tipo) {
-            const input = document.getElementById(`${tipo}-file`);
-            const label = document.getElementById(`label-${tipo}`);
-            if (input.files.length > 0) {
-                label.innerHTML = `<i class="fa-solid fa-check" style="color: var(--verde-whatsapp)"></i> ${input.files[0].name}`;
-                label.style.borderColor = 'var(--verde-whatsapp)';
-            }
-        }
-
-        function reportarPago(tipo, celular) {
-            const archivo = document.getElementById(`${tipo}-file`);
-            const aptoActual = localStorage.getItem('residente_apto') || "No especificado";
-            let servicio = tipo === 'futbol' ? 'Cancha de Fútbol' : 'Gimnasio';
-            
-            if (archivo.files.length === 0) {
-                alert("Por favor, adjunta el comprobante gráfico primero.");
-                return;
-            }
-
-            let mensaje = `*Reporte de Pago*\n*Remitente:* ${aptoActual}\n*Servicio:* ${servicio}\n_Archivo adjunto: [${archivo.files[0].name}]_`;
-            window.open(`https://api.whatsapp.com/send?phone=${celular}&text=${encodeURIComponent(mensaje)}`, '_blank');
-        }
-
-        function updateFileLabel() {
-            const fileInput = document.getElementById('med-file');
-            const fileLabel = document.getElementById('file-label');
-            if (fileInput.files.length > 0) {
-                fileLabel.innerHTML = `<i class="fa-solid fa-check" style="color: var(--verde-whatsapp)"></i> ${fileInput.files[0].name}`;
-                fileLabel.style.borderColor = 'var(--verde-whatsapp)';
-            }
-        }
-
-        function enviarAlMedico() {
-            const mensajeInput = document.getElementById('med-message').value;
-            const fileInput = document.getElementById('med-file');
-            const aptoActual = localStorage.getItem('residente_apto') || "No especificado";
-            
-            if(!mensajeInput.trim()) {
-                alert("Describe tu consulta médica.");
-                return;
-            }
-
-            let textoFinal = `*Consulta Médica*\n*Remitente:* ${aptoActual}\n\n*Síntomas:* ${mensajeInput}`;
-            if(fileInput.files.length > 0) textoFinal += `\n_(Adjunto: ${fileInput.files[0].name})_`;
-
-            window.open(`https://api.whatsapp.com/send?phone=573024058615&text=${encodeURIComponent(textoFinal)}`, '_blank');
-        }
-    </script>
-</body>
-</html>
+                        <h4 id="saldo-titulo">Saldo de

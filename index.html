@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conjunto Residencial Reserva de las Vacaciones</title>
+    <!-- Fuentes elegantes de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Iconos de FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* --- ESTILOS GLOBALES (Paleta Estrato 6) --- */
+        :root {
+            --dorado: #b48c2c;
+            --dorado-oscuro: #8e6d1e;
+            --azul-oscuro: #0f172a;
+            --gris-fondo: #f8fafc;
+            --gris-texto: #475569;
+            --blanco: #ffffff;
+            --verde-whatsapp: #25d366;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--gris-fondo);
+            color: var(--azul-oscuro);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- PANTALLA DE LOGIN OVERLAY --- */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.95)), url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1920&q=80') center/cover;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--blanco);
+            transition: opacity 0.5s ease;
+        }
+
+        .login-box {
+            background-color: var(--blanco);
+            color: var(--azul-oscuro);
+            padding: 40px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            border-top: 5px solid var(--dorado);
+        }
+
+        .login-box h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        .login-box p {
+            color: var(--gris-texto);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .login-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .login-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .login-group input, .login-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .login-group input:focus, .login-group select:focus {
+            outline: none;
+            border-color: var(--dorado);
+        }
+
+        .btn-login {
+            width: 100%;
+            background-color: var(--dorado);
+            color: var(--blanco);
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background-color: var(--dorado-oscuro);
+        }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        #main-content {
+            display: none; /* Se activa tras loguearse */
+        }
+
+        /* --- HEADER Y NAVEGACIÓN --- */
+        header {
+            background-color: var(--blanco);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 90px;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .logo span {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--dorado);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--dorado);
+        }
+
+        .user-info-nav {
+            font-size: 12px;
+            background-color: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-logout {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* --- SECCIÓN HERO --- */
+        .hero {
+            background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)), url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            height: 40vh;
+            display: flex;
+            align-items: center;
+            color: var(--blanco);
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-badge {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--dorado);
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 44px;
+            margin-bottom: 10px;
+        }
+
+        /* --- SECCIONES COMUNES --- */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            color: var(--azul-oscuro);
+            margin-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: var(--dorado);
+            margin: 15px auto 0;
+        }
+
+        /* GRID DE AMENITIES */
+        .grid-amenities {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background-color: var(--blanco);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-img {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .card-body {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-icon {
+            font-size: 28px;
+            color: var(--dorado);
+            margin-bottom: 15px;
+        }
+
+        .card-body h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: var(--azul-oscuro);
+        }
+
+        .card-body p {
+            color: var(--gris-texto);
+            font-size: 14px;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* --- INPUTS DE PAGO EN TARJETAS --- */
+        .payment-box {
+            margin-top: auto;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+        }
+
+        .payment-box label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .payment-box input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-btn {
+            display: block;
+            background-color: var(--gris-fondo);
+            border: 1px dashed #cbd5e1;
+            padding: 8px;
+            text-align: center;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--gris-texto);
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .custom-file-btn:hover {
+            border-color: var(--dorado);
+            color: var(--dorado);
+        }
+
+        .btn-pago-wa {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            background-color: var(--verde-whatsapp);
+            color: var(--blanco);
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-pago-wa:hover {
+            background-color: #1ebd57;
+        }
+
+        /* --- SECCIÓN DETALLE (DOS COLUMNAS) --- */
+        .split-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 50px;
+            align-items: center;
+        }
+
+        .split-text h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .split-text p {
+            color: var(--gris-texto);
+            margin-bottom: 20px;
+        }
+
+        /* --- BALANCE / SALDO DINÁMICO --- */
+        .saldo-display-box {
+            background: linear-gradient(135deg, var(--azul-oscuro), #1e293b);
+            color: var(--blanco);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid var(--dorado);
+            margin-top: 20px;
+        }
+
+        .saldo-display-box h4 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--dorado);
+            margin-bottom: 10px;
+        }
+
+        .saldo-monto {
+            font-size: 36px;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 1px;
+        }
+
+        .saldo-meta {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+        }
+
+        /* --- FORMULARIO MÉDICO INTERACTIVO --- */
+        .med-form-container {
+            background-color: var(--gris-fondo);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+            margin-top: 25px;
+        }
+
+        .med-form-container h4 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--azul-oscuro);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: none;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--dorado);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-btn {
+            display: block;
+            background-color: var(--blanco);
+            border: 2px dashed #cbd5e1;
+            padding: 15px;
+            text-align: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            color: var(--gris-texto);
+        }
+
+        .file-input-btn:hover {
+            border-color: var(--dorado);
+            color: var(--dorado);
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .btn-enviar-medico {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background-color: var(--verde-whatsapp);
+            color: var(--blanco);
+            padding: 14px;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-enviar-medico:hover {
+            background-color: #1ebd57;
+        }
+
+        .split-img {
+            width: 100%;
+            height: 540px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--azul-oscuro);
+            color: var(--blanco);
+            padding: 40px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        footer p {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA DE INICIO DE SESIÓN -->
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>Acceso Residente</h2>
+            <p>Reserva de las Vacaciones — Sistema Integrado</p>
+            
+            <div class="login-group">
+                <label>Correo Electrónico</label>
+                <input type="email" id="login-email" placeholder="ejemplo@reserva.com" value="residente@reserva.com">
+            </div>
+
+            <div class="login-group">
+                <label>Selecciona tu Apartamento</label>
+                <select id="login-apt">
+                    <option value="Apto 101 - Torre 1">Torre 1 - Apto 101</option>
+                    <option value="Apto 202 - Torre 1">Torre 1 - Apto 202</option>
+                    <option value="Apto 303 - Torre 2">Torre 2 - Apto 303</option>
+                    <option value="Apto 404 - Torre 2">Torre 2 - Apto 404</option>
+                </select>
+            </div>
+
+            <div class="login-group">
+                <label>Contraseña</label>
+                <input type="password" id="login-pass" placeholder="••••••••" value="123456">
+            </div>
+
+            <button class="btn-login" onclick="ejecutarLogin()">Iniciar Sesión</button>
+        </div>
+    </div>
+
+    <!-- ENTORNO DE LA PÁGINA (OCULTO INICIALMENTE) -->
+    <div id="main-content">
+        
+        <!-- MENÚ DE NAVEGACIÓN -->
+        <header>
+            <div class="container nav-container">
+                <div class="logo">
+                    Reserva de las Vacaciones
+                    <span>Conjunto Residencial</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#amenities">Club & Deportes</a></li>
+                    <li><a href="#salud">Salud</a></li>
+                    <li><a href="#banca">Centro Financiero</a></li>
+                    <li class="user-info-nav">
+                        <i class="fa-solid fa-user-tie"></i> <span id="nav-user-display">Apto 101</span>
+                        <i class="fa-solid fa-right-from-bracket btn-logout" onclick="ejecutarLogout()" title="Cerrar Sesión"></i>
+                    </li>
+                </ul>
+            </div>
+        </header>
+
+        <!-- BIENVENIDA -->
+        <section class="hero" id="inicio">
+            <div class="hero-content">
+                <span class="hero-badge">Exclusividad Estrato 6</span>
+                <h1>Plataforma de Copropiedad Privada</h1>
+            </div>
+        </section>
+
+        <!-- SECCIÓN CLUB Y DEPORTES CON REPORTES DE PAGO -->
+        <section class="section container" id="amenities">
+            <div class="section-title">
+                <h2>Club Deportivo & Confort</h2>
+                <p>Gestión directa de reservas y mensualidades</p>
+            </div>
+            <div class="grid-amenities">
+                
+                <!-- Cancha de Fútbol -->
+                <div class="card">
+                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80');"></div>
+                    <div class="card-body">
+                        <div class="card-icon"><i class="fa-solid fa-futbol"></i></div>
+                        <h3>Cancha Sintética Pro</h3>
+                        <p>Uso de la cancha con entrenador deportivo de planta asignado para prácticas personalizadas o eventos.</p>
+                        
+                        <div class="payment-box">
+                            <label>Reportar Pago de Mensualidad/Reserva</label>
+                            <label for="futbol-file" class="custom-file-btn" id="label-futbol">
+                                <i class="fa-solid fa-receipt"></i> Adjuntar Comprobante
+                            </label>
+                            <input type="file" id="futbol-file" accept="image/*" onchange="verificarArchivo('futbol')">
+                            <button class="btn-pago-wa" onclick="reportarPago('futbol', '573024757364')">
+                                <i class="fa-brands fa-whatsapp"></i> Enviar Pago Fútbol
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gimnasio -->
+                <div class="card">
+                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80');"></div>
+                    <div class="card-body">
+                        <div class="card-icon"><i class="fa-solid fa-dumbbell"></i></div>
+                        <h3>Gimnasio Equipado</h3>
+                        <p>Espacio premium cardiovascular, de fuerza y spinning. Acceso libre reportando tu tiquetera mensual activa.</p>
+                        
+                        <div class="payment-box">
+                            <label>Reportar Pago de Gimnasio / Plan</label>
+                            <label for="gym-file" class="custom-file-btn" id="label-gym">
+                                <i class="fa-solid fa-receipt"></i> Adjuntar Comprobante
+                            </label>
+                            <input type="file" id="gym-file" accept="image/*" onchange="verificarArchivo('gym')">
+                            <button class="btn-pago-wa" onclick="reportarPago('gym', '573124330638')">
+                                <i class="fa-brands fa-whatsapp"></i> Enviar Pago Gym
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tienda Gourmet -->
+                <div class="card">
+                    <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=600&q=80');"></div>
+                    <div class="card-body">
+                        <div class="card-icon"><i class="fa-solid fa-shop"></i></div>
+                        <h3>Tienda Gourmet Boutique</h3>
+                        <p>Market exclusivo para víveres selectos, delicatessen y bodega premium con cargo directo a su estado de cuenta mensual.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECCIÓN INTEGRADA: SALUD Y TELEMEDICINA -->
+        <section class="section" id="salud" style="background-color: var(--blanco);">
+            <div class="container split-section">
+                <div class="split-text">
+                    <h3>Salud & Módulo Médico Permanente</h3>
+                    <p>Contamos con un módulo médico propio para urgencias menores, enfermería 24/7 y telemedicina express vinculada a su cuenta de residente.</p>
+                    <p>Escribe tu consulta abajo, adjunta una fotografía y envíala directamente a nuestro equipo médico para recibir una explicación clara:</p>
+                    
+                    <div class="med-form-container">
+                        <h4><i class="fa-solid fa-user-md" style="color: var(--dorado);"></i> Consulta Médica Digital</h4>
+                        
+                        <div class="form-group">
+                            <label>1. Adjuntar Imagen (Examen o prescripción)</label>
+                            <div class="file-input-wrapper">
+                                <div class="file-input-btn" id="file-label">
+                                    <i class="fa-solid fa-cloud-upload-alt"></i> Seleccionar archivo gráfico
+                                </div>
+                                <input type="file" id="med-file" accept="image/*" onchange="updateFileLabel()">
+                            </div>
+                        </div>
+
+                    	<div class="form-group">
+                            <label>2. Describe tus síntomas o dudas</label>
+                            <textarea id="med-message" placeholder="Escribe aquí detalladamente lo que necesitas que el personal médico te explique..."></textarea>
+                        </div>
+
+                        <button class="btn-enviar-medico" onclick="enviarAlMedico()">
+                            <i class="fa-brands fa-whatsapp"></i> Enviar Caso Clínico
+                        </button>
+                    </div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80" alt="Consultorio Médico" class="split-img">
+            </div>
+        </section>
+
+        <!-- SECCIÓN INTEGRADA: CENTRO FINANCIERO / BANCO CON SALDO DINÁMICO -->
+        <section class="section" id="banca">
+            <div class="container split-section" style="direction: rtl;">
+                <div class="split-text" style="direction: ltr;">
+                    <h3>Centro Financiero & Estado de Cuenta</h3>
+                    <p>Privacidad, comodidad y seguridad absoluta para tus movimientos monetarios dentro de tu propio hogar.</p>
+                    <p>A continuación se despliega el saldo de administración actual de su copropiedad extraído de forma segura en tiempo real:</p>
+                    
+                    <!-- Estado de cuenta dinámico según login -->
+                    <div class="saldo-display-box">
+                        <h4 id="saldo-titulo">Saldo de Administración</h4>
+                        <div class="saldo-monto" id="saldo-valor">$0.00 COP</div>
+                        <div class="saldo-meta" id="saldo-meta-texto">Verificado para la unidad habitacional de manera exclusiva.</div>
+                    </div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=800&q=80" alt="Lounge Bancario Privado" class="split-img" style="direction: ltr;">
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer id="contacto">
+            <div class="container">
+                <p>&copy; 2026 Conjunto Residential Reserva de las Vacaciones. Todos los derechos reservados.</p>
+                <p style="font-size: 12px; margin-top: 5px; color: var(--dorado);">Seguridad y Exclusividad Integral • Estrato 6 Colombia</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- PROGRAMACIÓN LOGICA DINÁMICA (LOGIN + APARTAMENTOS + SALDOS) -->
+    <script>
+        // Base de datos simulada de Saldos por Apartamento
+        const baseDatosApartamentos = {
+            "Apto 101 - Torre 1": { saldo: "$345.000 COP", detalle: "Expedido el 01/06/2026 - Administración al día." },
+            "Apto 202 - Torre 1": { saldo: "$1.120.000 COP", detalle: "Incluye cobro extraordinario de mantenimiento de zonas comunes." },
+            "Apto 303 - Torre 2": { saldo: "$0 COP", detalle: "Cuenta en equilibrio. Próxima facturación Julio de 2026." },
+            "Apto 404 - Torre 2": { saldo: "$578.000 COP", detalle: "Saldo pendiente del mes anterior más recargo por mora." }
+        };
+
+        // Función de Inicio de Sesión
+        function ejecutarLogin() {
+            const email = document.getElementById('login-email').value;
+            const aptoSeleccionado = document.getElementById('login-apt').value;
+            const pass = document.getElementById('login-pass').value;
+
+            if(!email || !pass) {
+                alert("Por favor completa las credenciales.");
+                return;
+            }
+
+            // Guardar sesión en LocalStorage para persistencia
+            localStorage.setItem('residente_apto', aptoSeleccionado);
+            localStorage.setItem('residente_email', email);
+
+            // Cargar interfaz
+            renderizarDatosUsuario();
+        }
+
+        // Cargar datos en la interfaz basados en el usuario logueado
+        function renderizarDatosUsuario() {
+            const apto = localStorage.getItem('residente_apto');
+            if (!apto) return;
+
+            // Ocultar login y mostrar sitio
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+
+            // Actualizar textos en barra de navegación y sección de banca
+            document.getElementById('nav-user-display').innerText = apto;
+            document.getElementById('saldo-titulo').innerText = `Saldo Administración - ${apto}`;
+            
+            // Asignar saldo dinámico desde la BD
+            if (baseDatosApartamentos[apto]) {
+                document.getElementById('saldo-valor').innerText = baseDatosApartamentos[apto].saldo;
+                document.getElementById('saldo-meta-texto').innerText = baseDatosApartamentos[apto].detalle;
+            }
+        }
+
+        // Cerrar sesión
+        function ejecutarLogout() {
+            localStorage.removeItem('residente_apto');
+            localStorage.removeItem('residente_email');
+            window.location.reload();
+        }
+
+        // Mantener sesión al recargar la página
+        window.onload = function() {
+            if (localStorage.getItem('residente_apto')) {
+                renderizarDatosUsuario();
+            }
+        };
+
+        // Validación visual de archivos para Fútbol y Gym
+        function verificarArchivo(tipo) {
+            const input = document.getElementById(`${tipo}-file`);
+            const label = document.getElementById(`label-${tipo}`);
+            if (input.files.length > 0) {
+                label.innerHTML = `<i class="fa-solid fa-check" style="color: var(--verde-whatsapp)"></i> ${input.files[0].name}`;
+                label.style.borderColor = 'var(--verde-whatsapp)';
+            }
+        }
+
+        // Lógica de Envío de Pagos (Fútbol y Gym)
+        function reportarPago(tipo, celular) {
+            const archivo = document.getElementById(`${tipo}-file`);
+            const aptoActual = localStorage.getItem('residente_apto') || "Apartamento No Especificado";
+            let servicio = tipo === 'futbol' ? 'Reserva/Mensualidad Cancha de Fútbol' : 'Plan Mensual de Gimnasio';
+            
+            let mensaje = `*Reporte de Pago - Reserva de las Vacaciones*
+
+Hola, soy residente del *${aptoActual}* y adjunto este mensaje para reportar el pago correspondiente a: *${servicio}*.`;
+            
+            if (archivo.files.length > 0) {
+                mensaje += `
+
+_(Nota: El comprobante [${archivo.files[0].name}] está adjunto a continuación)_`;
+            } else {
+                alert("Por favor, adjunta primero la foto de tu comprobante de pago.");
+                return;
+            }
+
+            const url = `https://api.whatsapp.com/send?phone=${celular}&text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        // Validación visual de archivo (Módulo Médico)
+        function updateFileLabel() {
+            const fileInput = document.getElementById('med-file');
+            const fileLabel = document.getElementById('file-label');
+            if (fileInput.files.length > 0) {
+                fileLabel.innerHTML = `<i class="fa-solid fa-check" style="color: var(--verde-whatsapp)"></i> ${fileInput.files[0].name}`;
+                fileLabel.style.borderColor = 'var(--verde-whatsapp)';
+            }
+        }
+
+        // Lógica del Módulo Médico
+        function enviarAlMedico() {
+            const mensajeInput = document.getElementById('med-message').value;
+            const fileInput = document.getElementById('med-file');
+            const aptoActual = localStorage.getItem('residente_apto') || "Apartamento No Especificado";
+            const telefono = "573024058615";
+            
+            if(!mensajeInput.trim()) {
+                alert("Por favor, ingresa los detalles o descripción de tu consulta médica.");
+                return;
+            }
+
+            let textoFinal = `*Consulta Médica - Reserva de las Vacaciones*
+*Residente:* ${aptoActual}
+
+*Detalles del caso:* ${mensajeInput}`;
+            
+            if(fileInput.files.length > 0) {
+                textoFinal += `
+
+_(Nota: Adjunto la foto/documento [${fileInput.files[0].name}] en el clip de este chat)_`;
+            }
+
+            const url = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(textoFinal)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+
+</body>
+</html>

@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conjunto Residencial Reserva de las Vacaciones</title>
-    <!-- Fuentes elegantes de Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <!-- Iconos de FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2 family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
@@ -48,7 +46,7 @@
             padding: 0 20px;
         }
 
-        /* --- PANTALLA DE LOGIN OVERLAY --- */
+        /* --- PANTALLA DE LOGIN / REGISTRO OVERLAY --- */
         #login-overlay {
             position: fixed;
             top: 0;
@@ -133,6 +131,21 @@
 
         .btn-login:hover {
             background-color: var(--dorado-oscuro);
+        }
+
+        .toggle-form-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--dorado);
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .toggle-form-link:hover {
+            color: var(--dorado-oscuro);
+            text-decoration: underline;
         }
 
         /* --- CONTENIDO PRINCIPAL --- */
@@ -267,7 +280,6 @@
             margin: 15px auto 0;
         }
 
-        /* GRID DE AMENITIES */
         .grid-amenities {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -321,7 +333,7 @@
             flex-grow: 1;
         }
 
-        /* --- INPUTS DE PAGO EN TARJETAS --- */
+        /* --- REPORTE DE PAGO --- */
         .payment-box {
             margin-top: auto;
             border-top: 1px solid #e2e8f0;
@@ -382,7 +394,7 @@
             background-color: #1ebd57;
         }
 
-        /* --- SECCIÓN DETALLE (DOS COLUMNAS) --- */
+        /* --- SPLIT SECTIONS --- */
         .split-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
@@ -401,7 +413,7 @@
             margin-bottom: 20px;
         }
 
-        /* --- BALANCE / SALDO DINÁMICO --- */
+        /* --- PANEL DE BALANCE FINANCIERO --- */
         .saldo-display-box {
             background: linear-gradient(135deg, var(--azul-oscuro), #1e293b);
             color: var(--blanco);
@@ -435,7 +447,7 @@
             padding-top: 10px;
         }
 
-        /* --- FORMULARIO MÉDICO INTERACTIVO --- */
+        /* --- FORMULARIO MÉDICO --- */
         .med-form-container {
             background-color: var(--gris-fondo);
             padding: 30px;
@@ -497,7 +509,6 @@
             text-align: center;
             border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s;
             font-size: 14px;
             color: var(--gris-texto);
         }
@@ -532,11 +543,6 @@
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .btn-enviar-medico:hover {
-            background-color: #1ebd57;
         }
 
         .split-img {
@@ -544,10 +550,8 @@
             height: 540px;
             object-fit: cover;
             border-radius: 8px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        /* --- FOOTER --- */
         footer {
             background-color: var(--azul-oscuro);
             color: var(--blanco);
@@ -555,19 +559,14 @@
             text-align: center;
             font-size: 14px;
         }
-
-        footer p {
-            opacity: 0.7;
-        }
     </style>
 </head>
 <body>
 
-    <!-- PANTALLA DE INICIO DE SESIÓN -->
     <div id="login-overlay">
         <div class="login-box">
-            <h2>Acceso Residente</h2>
-            <p>Reserva de las Vacaciones — Sistema Integrado</p>
+            <h2 id="form-title">Acceso Residente</h2>
+            <p id="form-subtitle">Reserva de las Vacaciones — Sistema Integrado</p>
             
             <div class="login-group">
                 <label>Correo Electrónico</label>
@@ -587,23 +586,19 @@
 
             <div class="login-group">
                 <label>Contraseña</label>
-                <input type="password" id="login-pass" placeholder="••••••••" value="123456">
+                <input type="password" id="login-pass" placeholder="••••••••">
             </div>
 
-            <button class="btn-login" onclick="ejecutarLogin()">Iniciar Sesión</button>
+            <button class="btn-login" id="btn-submit" onclick="procesarFormulario()">Iniciar Sesión</button>
+            
+            <span class="toggle-form-link" id="toggle-link" onclick="alternarFormularios()">¿No tienes cuenta? Regístrate aquí</span>
         </div>
     </div>
 
-    <!-- ENTORNO DE LA PÁGINA (OCULTO INICIALMENTE) -->
     <div id="main-content">
-        
-        <!-- MENÚ DE NAVEGACIÓN -->
         <header>
             <div class="container nav-container">
-                <div class="logo">
-                    Reserva de las Vacaciones
-                    <span>Conjunto Residencial</span>
-                </div>
+                <div class="logo">Reserva de las Vacaciones<span>Conjunto Residencial</span></div>
                 <ul class="nav-menu">
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="#amenities">Club & Deportes</a></li>
@@ -617,7 +612,6 @@
             </div>
         </header>
 
-        <!-- BIENVENIDA -->
         <section class="hero" id="inicio">
             <div class="hero-content">
                 <span class="hero-badge">Exclusividad Estrato 6</span>
@@ -625,57 +619,42 @@
             </div>
         </section>
 
-        <!-- SECCIÓN CLUB Y DEPORTES CON REPORTES DE PAGO -->
         <section class="section container" id="amenities">
             <div class="section-title">
                 <h2>Club Deportivo & Confort</h2>
                 <p>Gestión directa de reservas y mensualidades</p>
             </div>
             <div class="grid-amenities">
-                
-                <!-- Cancha de Fútbol -->
                 <div class="card">
                     <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=600&q=80');"></div>
                     <div class="card-body">
                         <div class="card-icon"><i class="fa-solid fa-futbol"></i></div>
                         <h3>Cancha Sintética Pro</h3>
                         <p>Uso de la cancha con entrenador deportivo de planta asignado para prácticas personalizadas o eventos.</p>
-                        
                         <div class="payment-box">
                             <label>Reportar Pago de Mensualidad/Reserva</label>
-                            <label for="futbol-file" class="custom-file-btn" id="label-futbol">
-                                <i class="fa-solid fa-receipt"></i> Adjuntar Comprobante
-                            </label>
+                            <label for="futbol-file" class="custom-file-btn" id="label-futbol"><i class="fa-solid fa-receipt"></i> Adjuntar Comprobante</label>
                             <input type="file" id="futbol-file" accept="image/*" onchange="verificarArchivo('futbol')">
-                            <button class="btn-pago-wa" onclick="reportarPago('futbol', '573024757364')">
-                                <i class="fa-brands fa-whatsapp"></i> Enviar Pago Fútbol
-                            </button>
+                            <button class="btn-pago-wa" onclick="reportarPago('futbol', '573024757364')"><i class="fa-brands fa-whatsapp"></i> Enviar Pago Fútbol</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Gimnasio -->
                 <div class="card">
                     <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80');"></div>
                     <div class="card-body">
                         <div class="card-icon"><i class="fa-solid fa-dumbbell"></i></div>
                         <h3>Gimnasio Equipado</h3>
                         <p>Espacio premium cardiovascular, de fuerza y spinning. Acceso libre reportando tu tiquetera mensual activa.</p>
-                        
                         <div class="payment-box">
                             <label>Reportar Pago de Gimnasio / Plan</label>
-                            <label for="gym-file" class="custom-file-btn" id="label-gym">
-                                <i class="fa-solid fa-receipt"></i> Adjuntar Comprobante
-                            </label>
+                            <label for="gym-file" class="custom-file-btn" id="label-gym"><i class="fa-solid fa-receipt"></i> Adjuntar Comprobante</label>
                             <input type="file" id="gym-file" accept="image/*" onchange="verificarArchivo('gym')">
-                            <button class="btn-pago-wa" onclick="reportarPago('gym', '573124330638')">
-                                <i class="fa-brands fa-whatsapp"></i> Enviar Pago Gym
-                            </button>
+                            <button class="btn-pago-wa" onclick="reportarPago('gym', '573124330638')"><i class="fa-brands fa-whatsapp"></i> Enviar Pago Gym</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tienda Gourmet -->
                 <div class="card">
                     <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=600&q=80');"></div>
                     <div class="card-body">
@@ -684,54 +663,39 @@
                         <p>Market exclusivo para víveres selectos, delicatessen y bodega premium con cargo directo a su estado de cuenta mensual.</p>
                     </div>
                 </div>
-
             </div>
         </section>
 
-        <!-- SECCIÓN INTEGRADA: SALUD Y TELEMEDICINA -->
         <section class="section" id="salud" style="background-color: var(--blanco);">
             <div class="container split-section">
                 <div class="split-text">
                     <h3>Salud & Módulo Médico Permanente</h3>
                     <p>Contamos con un módulo médico propio para urgencias menores, enfermería 24/7 y telemedicina express vinculada a su cuenta de residente.</p>
-                    <p>Escribe tu consulta abajo, adjunta una fotografía y envíala directamente a nuestro equipo médico para recibir una explicación clara:</p>
-                    
                     <div class="med-form-container">
                         <h4><i class="fa-solid fa-user-md" style="color: var(--dorado);"></i> Consulta Médica Digital</h4>
-                        
                         <div class="form-group">
                             <label>1. Adjuntar Imagen (Examen o prescripción)</label>
                             <div class="file-input-wrapper">
-                                <div class="file-input-btn" id="file-label">
-                                    <i class="fa-solid fa-cloud-upload-alt"></i> Seleccionar archivo gráfico
-                                </div>
+                                <div class="file-input-btn" id="file-label"><i class="fa-solid fa-cloud-upload-alt"></i> Seleccionar archivo gráfico</div>
                                 <input type="file" id="med-file" accept="image/*" onchange="updateFileLabel()">
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label>2. Describe tus síntomas o dudas</label>
                             <textarea id="med-message" placeholder="Escribe aquí detalladamente lo que necesitas que el personal médico te explique..."></textarea>
                         </div>
-
-                        <button class="btn-enviar-medico" onclick="enviarAlMedico()">
-                            <i class="fa-brands fa-whatsapp"></i> Enviar Caso Clínico
-                        </button>
+                        <button class="btn-enviar-medico" onclick="enviarAlMedico()"><i class="fa-brands fa-whatsapp"></i> Enviar Caso Clínico</button>
                     </div>
                 </div>
                 <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80" alt="Consultorio Médico" class="split-img">
             </div>
         </section>
 
-        <!-- SECCIÓN INTEGRADA: CENTRO FINANCIERO CON SALDO DINÁMICO -->
         <section class="section" id="banca">
             <div class="container split-section" style="direction: rtl;">
                 <div class="split-text" style="direction: ltr;">
                     <h3>Centro Financiero & Estado de Cuenta</h3>
                     <p>Privacidad, comodidad y seguridad absoluta para tus movimientos monetarios dentro de tu propio hogar.</p>
-                    <p>A continuación se despliega el saldo de administración actual de su copropiedad extraído de forma segura en tiempo real:</p>
-                    
-                    <!-- Estado de cuenta dinámico según login -->
                     <div class="saldo-display-box">
                         <h4 id="saldo-titulo">Saldo de Administración</h4>
                         <div class="saldo-monto" id="saldo-valor">$0.00 COP</div>
@@ -742,47 +706,59 @@
             </div>
         </section>
 
-        <!-- FOOTER -->
-        <footer id="contacto">
+        <footer>
             <div class="container">
                 <p>&copy; 2026 Conjunto Residencial Reserva de las Vacaciones. Todos los derechos reservados.</p>
                 <p style="font-size: 12px; margin-top: 5px; color: var(--dorado);">Seguridad y Exclusividad Integral • Estrato 6 Colombia</p>
             </div>
         </footer>
-
     </div>
 
-    <!-- PROGRAMACIÓN LOGICA DINÁMICA -->
     <script>
-        // Correos con privilegios de Administrador y Dinero Infinito
+        let esModoRegistro = false;
+
         const adminEmails = [
             "troopermaskyt@gmail.com",
             "floppabebereciennacido@gmail.com",
             "gabomurcia09@gmail.com"
         ];
 
-        // Base de datos de Saldos tradicionales por Apartamento
-        const baseDatosApartamentos = {
+        const baseDatosSaldosDefecto = {
             "Apto 101 - Torre 1": { saldo: "$345.000 COP", detalle: "Expedido el 01/06/2026 - Administración al día." },
-            "Apto 202 - Torre 1": { saldo: "$1.120.000 COP", detalle: "Incluye cobro extraordinario de mantenimiento de zonas comunes." },
-            "Apto 303 - Torre 2": { saldo: "$0 COP", detalle: "Cuenta en equilibrio. Próxima facturación Julio de 2026." },
-            "Apto 404 - Torre 2": { saldo: "$578.000 COP", detalle: "Saldo pendiente del mes anterior más recargo por mora." },
-            "Administrador General": { saldo: "$∞ COP", detalle: "Fondos Ilimitados de Copropiedad — Cuenta Maestra de Administración General." }
+            "Apto 202 - Torre 1": { saldo: "$1.120.000 COP", detalle: "Incluye cobro extraordinario de mantenimiento." },
+            "Apto 303 - Torre 2": { saldo: "$0 COP", detalle: "Cuenta en equilibrio uniforme." },
+            "Apto 404 - Torre 2": { saldo: "$578.000 COP", detalle: "Saldo pendiente acumulado del periodo anterior." },
+            "Administrador General": { saldo: "$∞ COP", detalle: "Fondos Ilimitados de Copropiedad — Cuenta Maestra." }
         };
 
-        // Comprobación en tiempo real al escribir el correo electrónico
+        function alternarFormularios() {
+            esModoRegistro = !esModoRegistro;
+            const title = document.getElementById('form-title');
+            const submitBtn = document.getElementById('btn-submit');
+            const link = document.getElementById('toggle-link');
+
+            if(esModoRegistro) {
+                title.innerText = "Registrar Residente";
+                submitBtn.innerText = "Crear Cuenta Nueva";
+                link.innerText = "¿Ya tienes cuenta? Inicia sesión";
+            } else {
+                title.innerText = "Acceso Residente";
+                submitBtn.innerText = "Iniciar Sesión";
+                link.innerText = "¿No tienes cuenta? Regístrate aquí";
+            }
+            validarCorreoAdmin();
+        }
+
         function validarCorreoAdmin() {
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const selectApt = document.getElementById('login-apt');
             const optAdmin = document.getElementById('opt-admin');
 
             if (adminEmails.includes(email)) {
-                // Mostrar opción admin, seleccionarla y bloquear el control para que no use otro apto
                 optAdmin.style.display = 'block';
                 selectApt.value = "Administrador General";
                 selectApt.setAttribute("disabled", "true");
             } else {
-                // Restaurar comportamiento normal
                 selectApt.removeAttribute("disabled");
                 optAdmin.style.display = 'none';
                 if(selectApt.value === "Administrador General") {
@@ -791,71 +767,80 @@
             }
         }
 
-        // Función de Inicio de Sesión
-        function ejecutarLogin() {
+        function procesarFormulario() {
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const pass = document.getElementById('login-pass').value;
-            let aptoSeleccionado = document.getElementById('login-apt').value;
+            let apto = document.getElementById('login-apt').value;
 
             if(!email || !pass) {
-                alert("Por favor completa las credenciales básicas.");
+                alert("Completa todos los campos obligatorios.");
                 return;
             }
 
-            // Forzar que si es un correo admin, su rol sea Administrador General
             if(adminEmails.includes(email)) {
-                aptoSeleccionado = "Administrador General";
+                apto = "Administrador General";
             }
 
-            // Guardar sesión local
-            localStorage.setItem('residente_apto', aptoSeleccionado);
-            localStorage.setItem('residente_email', email);
+            let usuariosRegistrados = JSON.parse(localStorage.getItem('db_usuarios')) || {};
 
-            // Cargar la interfaz de usuario
+            if (esModoRegistro) {
+                if(usuariosRegistrados[email]) {
+                    alert("Este correo electrónico ya está registrado. Por favor, inicia sesión.");
+                    return;
+                }
+                usuariosRegistrados[email] = { password: pass, apartamento: apto };
+                localStorage.setItem('db_usuarios', JSON.stringify(usuariosRegistrados));
+                alert("¡Registro Exitoso! Iniciando sesión automáticamente...");
+            } else {
+                if(!adminEmails.includes(email)) {
+                    if(!usuariosRegistrados[email] || usuariosRegistrados[email].password !== pass) {
+                        alert("Credenciales incorrectas o usuario no registrado.");
+                        return;
+                    }
+                    apto = usuariosRegistrados[email].apartamento;
+                }
+            }
+
+            localStorage.setItem('residente_apto', apto);
+            localStorage.setItem('residente_email', email);
             renderizarDatosUsuario();
         }
 
-        // Cargar datos en la interfaz basados en el usuario logueado
         function renderizarDatosUsuario() {
             const apto = localStorage.getItem('residente_apto');
             if (!apto) return;
 
-            // Ocultar login y mostrar sitio
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
 
-            // Ajustar textos informativos del header y del panel financiero
             document.getElementById('nav-user-display').innerText = apto;
             document.getElementById('saldo-titulo').innerText = `Estado de Cuenta — ${apto}`;
             
-            if (baseDatosApartamentos[apto]) {
-                document.getElementById('saldo-valor').innerText = baseDatosApartamentos[apto].saldo;
-                document.getElementById('saldo-meta-texto').innerText = baseDatosApartamentos[apto].detalle;
-                
-                // Si tiene dinero infinito, aplicar estilo dorado de resalte al texto del saldo
-                if(apto === "Administrador General") {
-                    document.getElementById('saldo-valor').style.color = "var(--dorado)";
-                } else {
-                    document.getElementById('saldo-valor').style.color = "var(--blanco)";
-                }
+            const datosSaldo = baseDatosSaldosDefecto[apto] || { saldo: "$500.000 COP", detalle: "Saldo base inicial para nuevos residentes registrados." };
+            
+            document.getElementById('nav-user-display').innerText = apto;
+            document.getElementById('saldo-valor').innerText = datosSaldo.saldo;
+            document.getElementById('saldo-meta-texto').innerText = datosSaldo.detalle;
+            
+            if(apto === "Administrador General") {
+                document.getElementById('saldo-valor').style.color = "var(--dorado)";
+            } else {
+                document.getElementById('saldo-valor').style.color = "var(--blanco)";
             }
         }
 
-        // Cerrar sesión
         function ejecutarLogout() {
             localStorage.removeItem('residente_apto');
             localStorage.removeItem('residente_email');
             window.location.reload();
         }
 
-        // Mantener sesión activa al recargar la página
         window.onload = function() {
             if (localStorage.getItem('residente_apto')) {
                 renderizarDatosUsuario();
             }
         };
 
-        // Validación visual de archivos adjuntos (Fútbol y Gym)
         function verificarArchivo(tipo) {
             const input = document.getElementById(`${tipo}-file`);
             const label = document.getElementById(`label-${tipo}`);
@@ -865,30 +850,20 @@
             }
         }
 
-        // Lógica de Envío de Pagos por WhatsApp
         function reportarPago(tipo, celular) {
             const archivo = document.getElementById(`${tipo}-file`);
             const aptoActual = localStorage.getItem('residente_apto') || "No especificado";
-            let servicio = tipo === 'futbol' ? 'Reserva/Mensualidad Cancha de Fútbol' : 'Plan Mensual de Gimnasio';
+            let servicio = tipo === 'futbol' ? 'Cancha de Fútbol' : 'Gimnasio';
             
-            let mensaje = `*Reporte de Pago — Reserva de las Vacaciones*
-
-Hola, me comunico desde la cuenta de: *${aptoActual}* para reportar el pago del servicio: *${servicio}*.`;
-            
-            if (archivo.files.length > 0) {
-                mensaje += `
-
-_(Nota: El comprobante [${archivo.files[0].name}] está adjunto a continuación)_`;
-            } else {
-                alert("Por favor, adjunta la imagen de tu comprobante primero.");
+            if (archivo.files.length === 0) {
+                alert("Por favor, adjunta el comprobante gráfico primero.");
                 return;
             }
 
-            const url = `https://api.whatsapp.com/send?phone=${celular}&text=${encodeURIComponent(mensaje)}`;
-            window.open(url, '_blank');
+            let mensaje = `*Reporte de Pago*\n*Remitente:* ${aptoActual}\n*Servicio:* ${servicio}\n_Archivo adjunto: [${archivo.files[0].name}]_`;
+            window.open(`https://api.whatsapp.com/send?phone=${celular}&text=${encodeURIComponent(mensaje)}`, '_blank');
         }
 
-        // Validación visual de archivo (Módulo Médico)
         function updateFileLabel() {
             const fileInput = document.getElementById('med-file');
             const fileLabel = document.getElementById('file-label');
@@ -898,33 +873,21 @@ _(Nota: El comprobante [${archivo.files[0].name}] está adjunto a continuación)
             }
         }
 
-        // Lógica del Módulo Médico
         function enviarAlMedico() {
             const mensajeInput = document.getElementById('med-message').value;
             const fileInput = document.getElementById('med-file');
             const aptoActual = localStorage.getItem('residente_apto') || "No especificado";
-            const telefono = "573024058615";
             
             if(!mensajeInput.trim()) {
-                alert("Por favor, ingresa los detalles o descripción de tu consulta médica.");
+                alert("Describe tu consulta médica.");
                 return;
             }
 
-            let textoFinal = `*Consulta Médica — Reserva de las Vacaciones*
-*Remitente:* ${aptoActual}
+            let textoFinal = `*Consulta Médica*\n*Remitente:* ${aptoActual}\n\n*Síntomas:* ${mensajeInput}`;
+            if(fileInput.files.length > 0) textoFinal += `\n_(Adjunto: ${fileInput.files[0].name})_`;
 
-*Detalles del caso:* ${mensajeInput}`;
-            
-            if(fileInput.files.length > 0) {
-                textoFinal += `
-
-_(Nota: Adjunto la foto/documento [${fileInput.files[0].name}] en este chat)_`;
-            }
-
-            const url = `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(textoFinal)}`;
-            window.open(url, '_blank');
+            window.open(`https://api.whatsapp.com/send?phone=573024058615&text=${encodeURIComponent(textoFinal)}`, '_blank');
         }
     </script>
-
 </body>
 </html>

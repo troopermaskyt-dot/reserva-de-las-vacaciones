@@ -73,6 +73,28 @@
             border-top: 5px solid var(--dorado);
         }
 
+        .login-logo {
+            width: 130px;
+            height: 130px;
+            object-fit: contain;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: block;
+        }
+
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 50%;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
         .login-box h2 {
             font-family: 'Playfair Display', serif;
             font-size: 26px;
@@ -175,7 +197,9 @@
             font-weight: 700;
             color: var(--azul-oscuro);
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
             line-height: 1.1;
         }
 
@@ -565,6 +589,7 @@
 
     <div id="login-overlay">
         <div class="login-box">
+            <img src="logo-reserva.png" alt="Logo Conjunto Residencial Reserva de las Vacaciones" class="login-logo">
             <h2 id="form-title">Acceso Residente</h2>
             <p id="form-subtitle">Reserva de las Vacaciones — Sistema Integrado</p>
             
@@ -598,7 +623,10 @@
     <div id="main-content">
         <header>
             <div class="container nav-container">
-                <div class="logo">Reserva de las Vacaciones<span>Conjunto Residencial</span></div>
+                <div class="logo">
+                    <img src="logo-reserva.png" alt="Logo Reserva de las Vacaciones" class="logo-img">
+                    <div class="logo-text">Reserva de las Vacaciones<span>Conjunto Residencial</span></div>
+                </div>
                 <ul class="nav-menu">
                     <li><a href="#inicio">Inicio</a></li>
                     <li><a href="#amenities">Club & Deportes</a></li>

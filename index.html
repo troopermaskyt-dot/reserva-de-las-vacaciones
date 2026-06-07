@@ -1278,19 +1278,30 @@
 
                 <!-- Panel Admin: Redactar mensaje -->
                 <div class="admin-panel admin-msg-form" id="panel-admin-mensajes" style="display:none; margin-bottom:40px;">
-                    <h3><i class="fa-solid fa-bullhorn" style="margin-right:8px;"></i>Enviar Mensaje / Convocar Reunión</h3>
+                    <h3><i class="fa-solid fa-bullhorn" style="margin-right:8px;"></i>Panel Administrador — Mensajes & Reuniones</h3>
+                    <p style="font-size:13px; opacity:0.65; margin-bottom:18px;">Publica comunicados, convocatorias o avisos urgentes visibles para todos los residentes.</p>
 
                     <div class="admin-form-grid" style="margin-bottom:12px;">
-                        <input type="text" id="msg-titulo" placeholder="Título del mensaje">
-                        <select id="msg-tipo">
-                            <option value="general">General</option>
-                            <option value="reunion">Convocatoria de Reunión</option>
-                            <option value="urgente">Urgente</option>
+                        <input type="text" id="msg-titulo" placeholder="Título del mensaje o reunión">
+                        <select id="msg-tipo" onchange="toggleFechaReunion()">
+                            <option value="general">📢 Comunicado General</option>
+                            <option value="reunion">📅 Convocatoria de Reunión</option>
+                            <option value="urgente">🚨 Aviso Urgente</option>
                         </select>
-                        <input type="datetime-local" id="msg-fecha-reunion" placeholder="Fecha y hora reunión">
                     </div>
-                    <textarea id="msg-contenido" placeholder="Escribe el mensaje para todos los residentes..."></textarea>
-                    <button class="btn-admin" onclick="enviarMensaje()"><i class="fa-solid fa-paper-plane"></i> Publicar Mensaje</button>
+
+                    <div id="campo-fecha-reunion" style="margin-bottom:12px; display:none;">
+                        <label style="font-size:12px; color:rgba(255,255,255,0.6); display:block; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;"><i class="fa-solid fa-calendar-days" style="margin-right:5px;"></i>Fecha y hora de la reunión</label>
+                        <input type="datetime-local" id="msg-fecha-reunion" style="width:100%; padding:10px 12px; border-radius:6px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.08); color:var(--blanco); font-family:'Montserrat',sans-serif; font-size:13px;">
+                    </div>
+
+                    <label style="font-size:12px; color:rgba(255,255,255,0.6); display:block; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.5px;"><i class="fa-solid fa-align-left" style="margin-right:5px;"></i>Contenido del mensaje</label>
+                    <textarea id="msg-contenido" placeholder="Escribe aquí el comunicado para todos los residentes..."></textarea>
+
+                    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:5px;">
+                        <button class="btn-admin" onclick="enviarMensaje()"><i class="fa-solid fa-paper-plane"></i> Publicar Mensaje</button>
+                        <span style="font-size:12px; opacity:0.5;" id="msg-contador-publicados"></span>
+                    </div>
                 </div>
 
                 <!-- Lista de mensajes -->
@@ -1540,6 +1551,11 @@
             } else {
                 document.getElementById('saldo-valor').style.color = "var(--blanco)";
             }
+
+            // Cargar secciones dinámicas
+            renderizarDeudas();
+            renderizarMensajes();
+            iniciarMonitorReunion();
         }
 
         function ejecutarLogout() {
@@ -1659,6 +1675,7 @@
             const noMsg = document.getElementById('no-mensajes');
 
             document.getElementById('panel-admin-mensajes').style.display = esAdmin ? 'block' : 'none';
+            if (esAdmin) actualizarContadorPublicados();
 
             lista.innerHTML = '';
             if (msgs.length === 0) { noMsg.style.display = 'block'; return; }
@@ -1671,18 +1688,28 @@
                 const realIdx = msgs.length - 1 - idx;
                 const esReunion = m.tipo === 'reunion';
                 const yaAcepto = aceptados[realIdx];
+
+                // Contar asistencias confirmadas para admin
+                const totalAceptados = Object.keys(aceptados).filter(k => String(k) === String(realIdx) && aceptados[k]).length;
+                // Contar todos los que aceptaron esa reunión
+                const contadorAsistentes = m.asistentes ? m.asistentes : 0;
+
                 const card = document.createElement('div');
                 card.className = 'mensaje-card';
                 card.innerHTML = `
                     <div class="msg-header">
                         <h4>${m.titulo}</h4>
-                        <span class="msg-badge ${m.tipo}">${m.tipo === 'reunion' ? 'Reunión' : m.tipo === 'urgente' ? 'Urgente' : 'General'}</span>
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span class="msg-badge ${m.tipo}">${m.tipo === 'reunion' ? 'Reunión' : m.tipo === 'urgente' ? 'Urgente' : 'General'}</span>
+                            ${esAdmin ? `<button onclick="eliminarMensaje(${realIdx})" style="background:#ef4444;color:white;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:600;" title="Eliminar mensaje"><i class="fa-solid fa-trash"></i> Eliminar</button>` : ''}
+                        </div>
                     </div>
                     <p>${m.contenido}</p>
                     <div class="msg-meta">
                         <span><i class="fa-solid fa-user-tie"></i> Administración</span>
                         <span><i class="fa-solid fa-clock"></i> ${m.hora}</span>
                         ${esReunion && m.fechaReunion ? `<span><i class="fa-solid fa-calendar-check" style="color:#3b82f6;"></i> ${new Date(m.fechaReunion).toLocaleString('es-CO')}</span>` : ''}
+                        ${esReunion && esAdmin ? `<span style="color:var(--dorado);font-weight:700;"><i class="fa-solid fa-users"></i> ${m.asistentes || 0} confirmado(s)</span>` : ''}
                     </div>
                     ${esReunion ? `
                     <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
@@ -1696,6 +1723,28 @@
                 `;
                 lista.appendChild(card);
             });
+        }
+
+        function eliminarMensaje(idx) {
+            if (!confirm('¿Eliminar este mensaje para todos los residentes?')) return;
+            const arr = cargarMensajes();
+            arr.splice(idx, 1);
+            // Ajustar índices de aceptados
+            const aceptados = JSON.parse(localStorage.getItem('db_aceptados') || '{}');
+            const nuevosAceptados = {};
+            Object.keys(aceptados).forEach(k => {
+                const ki = parseInt(k);
+                if (ki < idx) nuevosAceptados[ki] = aceptados[k];
+                else if (ki > idx) nuevosAceptados[ki - 1] = aceptados[k];
+            });
+            localStorage.setItem('db_aceptados', JSON.stringify(nuevosAceptados));
+            guardarMensajes(arr);
+            renderizarMensajes();
+        }
+
+        function toggleFechaReunion() {
+            const tipo = document.getElementById('msg-tipo').value;
+            document.getElementById('campo-fecha-reunion').style.display = tipo === 'reunion' ? 'block' : 'none';
         }
 
         function enviarMensaje() {
@@ -1714,14 +1763,32 @@
                 contenido,
                 fechaReunion: fechaReunion || null,
                 hora: new Date().toLocaleString('es-CO'),
+                asistentes: 0,
             });
             guardarMensajes(arr);
             renderizarMensajes();
             iniciarMonitorReunion();
+            actualizarContadorPublicados();
 
             document.getElementById('msg-titulo').value = '';
             document.getElementById('msg-contenido').value = '';
             document.getElementById('msg-fecha-reunion').value = '';
+
+            // Feedback visual
+            const btn = document.querySelector('[onclick="enviarMensaje()"]');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Publicado!';
+            btn.style.background = 'var(--verde-whatsapp)';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Publicar Mensaje';
+                btn.style.background = '';
+            }, 2000);
+        }
+
+        function actualizarContadorPublicados() {
+            const el = document.getElementById('msg-contador-publicados');
+            if (!el) return;
+            const total = cargarMensajes().length;
+            el.textContent = total > 0 ? `${total} mensaje(s) publicado(s)` : '';
         }
 
         function aceptarReunion(idx) {
@@ -1729,6 +1796,12 @@
             if (aceptados[idx]) return;
             aceptados[idx] = true;
             localStorage.setItem('db_aceptados', JSON.stringify(aceptados));
+            // Incrementar contador de asistentes en el mensaje
+            const arr = cargarMensajes();
+            if (arr[idx]) {
+                arr[idx].asistentes = (arr[idx].asistentes || 0) + 1;
+                guardarMensajes(arr);
+            }
             renderizarMensajes();
         }
 

@@ -1094,12 +1094,336 @@
             font-weight: 600;
         }
 
-        /* Responsive reunión */
-        @media (max-width: 768px) {
-            .reunion-body { grid-template-columns: 1fr; }
-            .chat-panel { display: none; }
-            .video-area { grid-template-columns: 1fr; }
+        /* ===== SECCIÓN QUEJAS ===== */
+        .queja-form-container {
+            background: var(--blanco);
+            border-radius: 12px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+            border-top: 4px solid #ef4444;
+            margin-bottom: 30px;
         }
+
+        .queja-form-container h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: var(--azul-oscuro);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .queja-form-container h3 i { color: #ef4444; }
+
+        .queja-tipo-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .queja-tipo-btn {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            background: var(--gris-fondo);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--gris-texto);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .queja-tipo-btn.activo, .queja-tipo-btn:hover {
+            border-color: #ef4444;
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .queja-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .queja-input:focus { outline: none; border-color: #ef4444; }
+
+        .queja-textarea {
+            width: 100%;
+            height: 110px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            resize: none;
+            margin-bottom: 15px;
+        }
+
+        .queja-textarea:focus { outline: none; border-color: #ef4444; }
+
+        .btn-queja-enviar {
+            background: #ef4444;
+            color: var(--blanco);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-queja-enviar:hover { background: #dc2626; }
+
+        .quejas-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .queja-card {
+            background: var(--blanco);
+            border-radius: 10px;
+            padding: 20px 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border-left: 4px solid #ef4444;
+            position: relative;
+        }
+
+        .queja-card .qc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .queja-card .qc-autor {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--azul-oscuro);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .queja-badge {
+            font-size: 10px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+        }
+
+        .queja-badge.resuelta { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+        .queja-badge.en-proceso { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+
+        .queja-card .qc-texto { color: var(--gris-texto); font-size: 14px; line-height: 1.6; }
+        .queja-card .qc-meta { font-size: 11px; color: #94a3b8; margin-top: 10px; }
+
+        .queja-anon-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--gris-texto);
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .queja-anon-toggle input { cursor: pointer; }
+
+        /* ===== SECCIÓN CHAT ===== */
+        .chat-comunidad-wrapper {
+            background: var(--blanco);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 520px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .chat-comunidad-header {
+            background: linear-gradient(135deg, var(--azul-oscuro), #1e293b);
+            padding: 20px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 3px solid var(--dorado);
+        }
+
+        .chat-comunidad-header .ch-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(180,140,44,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dorado);
+            font-size: 18px;
+        }
+
+        .chat-comunidad-header .ch-info h4 {
+            color: var(--blanco);
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+
+        .chat-comunidad-header .ch-info span {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .chat-comunidad-mensajes {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: var(--gris-fondo);
+        }
+
+        .chat-comunidad-mensajes::-webkit-scrollbar { width: 5px; }
+        .chat-comunidad-mensajes::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .chat-burbuja {
+            max-width: 75%;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .chat-burbuja.propio { align-self: flex-end; align-items: flex-end; }
+        .chat-burbuja.ajeno { align-self: flex-start; align-items: flex-start; }
+
+        .chat-burbuja .cb-autor {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gris-texto);
+        }
+
+        .chat-burbuja.propio .cb-autor { color: var(--dorado-oscuro); }
+
+        .chat-burbuja .cb-texto {
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--azul-oscuro);
+            background: var(--blanco);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-burbuja.propio .cb-texto {
+            background: var(--azul-oscuro);
+            color: var(--blanco);
+            border-radius: 12px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-burbuja .cb-hora {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .chat-sistema-msg {
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            padding: 5px 12px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 20px;
+            align-self: center;
+        }
+
+        .chat-comunidad-input-area {
+            padding: 15px 20px;
+            background: var(--blanco);
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-comunidad-input-area input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 24px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-comunidad-input-area input:focus { border-color: var(--dorado); }
+
+        .btn-chat-enviar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--dorado);
+            border: none;
+            color: var(--blanco);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.1s;
+            flex-shrink: 0;
+        }
+
+        .btn-chat-enviar:hover { background: var(--dorado-oscuro); transform: scale(1.05); }
+
+        .chat-emoji-bar {
+            display: flex;
+            gap: 6px;
+            padding: 8px 20px 0;
+            background: var(--blanco);
+        }
+
+        .emoji-btn {
+            font-size: 20px;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: transform 0.15s;
+            border: none;
+            background: transparent;
+        }
+
+        .emoji-btn:hover { transform: scale(1.3); }
+
     </style>
 </head>
 <body>
@@ -1149,6 +1473,8 @@
                     <li><a href="#mensajes">Mensajes</a></li>
                     <li><a href="#salud">Salud</a></li>
                     <li><a href="#banca">Centro Financiero</a></li>
+                    <li><a href="#quejas">Quejas</a></li>
+                    <li><a href="#chat-conjunto">Chat</a></li>
                     <li class="user-info-nav">
                         <i class="fa-solid fa-user-tie"></i> <span id="nav-user-display">Cargando...</span>
                         <i class="fa-solid fa-right-from-bracket btn-logout" onclick="ejecutarLogout()" title="Cerrar Sesión"></i>
@@ -1350,6 +1676,87 @@
                     </div>
                 </div>
                 <img src="https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=800&q=80" alt="Lounge Bancario Privado" class="split-img" style="direction: ltr;">
+            </div>
+        </section>
+
+        <!-- ===== SECCIÓN QUEJAS ===== -->
+        <section class="section container" id="quejas">
+            <div class="section-title">
+                <h2>Buzón de Quejas y Sugerencias</h2>
+                <p>Canal oficial para reportar inconvenientes o proponer mejoras al conjunto</p>
+            </div>
+
+            <!-- Formulario de queja -->
+            <div class="queja-form-container">
+                <h3><i class="fa-solid fa-triangle-exclamation"></i> Nueva Queja o Sugerencia</h3>
+                <div class="queja-tipo-grid" id="queja-tipos">
+                    <button class="queja-tipo-btn activo" onclick="seleccionarTipoQueja(this)">Ruido</button>
+                    <button class="queja-tipo-btn" onclick="seleccionarTipoQueja(this)">Zonas Comunes</button>
+                    <button class="queja-tipo-btn" onclick="seleccionarTipoQueja(this)">Seguridad</button>
+                    <button class="queja-tipo-btn" onclick="seleccionarTipoQueja(this)">Mascotas</button>
+                    <button class="queja-tipo-btn" onclick="seleccionarTipoQueja(this)">Parqueadero</button>
+                    <button class="queja-tipo-btn" onclick="seleccionarTipoQueja(this)">Mantenimiento</button>
+                    <button class="queja-tipo-btn" onclick="seleccionarTipoQueja(this)">Sugerencia</button>
+                    <button class="queja-tipo-btn" onclick="seleccionarTipoQueja(this)">Otro</button>
+                </div>
+                <label class="queja-anon-toggle">
+                    <input type="checkbox" id="queja-anonima"> Enviar de forma anónima
+                </label>
+                <textarea class="queja-textarea" id="queja-descripcion" placeholder="Describe detalladamente la situación o sugerencia..."></textarea>
+                <button class="btn-queja-enviar" onclick="enviarQueja()">
+                    <i class="fa-solid fa-paper-plane"></i> Publicar Queja
+                </button>
+            </div>
+
+            <!-- Lista de quejas publicadas -->
+            <h3 style="font-family:'Playfair Display',serif; font-size:22px; color:var(--azul-oscuro); margin-bottom:20px;">
+                <i class="fa-solid fa-list-ul" style="color:var(--dorado); margin-right:8px;"></i>Quejas Recientes
+            </h3>
+            <div class="quejas-lista" id="quejas-lista">
+                <!-- quejas dinámicas -->
+            </div>
+        </section>
+
+        <!-- ===== SECCIÓN CHAT CONJUNTO ===== -->
+        <section class="section" id="chat-conjunto" style="background-color: var(--gris-fondo);">
+            <div class="container">
+                <div class="section-title">
+                    <h2>Chat del Conjunto</h2>
+                    <p>Espacio de comunicación directa entre residentes de Reserva de las Vacaciones</p>
+                </div>
+
+                <div class="chat-comunidad-wrapper">
+                    <div class="chat-comunidad-header">
+                        <div class="ch-icon"><i class="fa-solid fa-comments"></i></div>
+                        <div class="ch-info">
+                            <h4>Reserva de las Vacaciones</h4>
+                            <span id="chat-residentes-online">Canal general · Residentes conectados</span>
+                        </div>
+                    </div>
+
+                    <div class="chat-emoji-bar">
+                        <button class="emoji-btn" onclick="insertarEmoji('👋')">👋</button>
+                        <button class="emoji-btn" onclick="insertarEmoji('✅')">✅</button>
+                        <button class="emoji-btn" onclick="insertarEmoji('⚠️')">⚠️</button>
+                        <button class="emoji-btn" onclick="insertarEmoji('🔑')">🔑</button>
+                        <button class="emoji-btn" onclick="insertarEmoji('🏠')">🏠</button>
+                        <button class="emoji-btn" onclick="insertarEmoji('❤️')">❤️</button>
+                        <button class="emoji-btn" onclick="insertarEmoji('😊')">😊</button>
+                        <button class="emoji-btn" onclick="insertarEmoji('🙏')">🙏</button>
+                    </div>
+
+                    <div class="chat-comunidad-mensajes" id="chat-comunidad-msgs">
+                        <div class="chat-sistema-msg">Bienvenido al chat del conjunto. Sé amable y respetuoso.</div>
+                        <!-- mensajes se agregan dinámicamente -->
+                    </div>
+
+                    <div class="chat-comunidad-input-area">
+                        <input type="text" id="chat-comunidad-input" placeholder="Escribe un mensaje para el conjunto..." onkeydown="if(event.key==='Enter') enviarMsgComunidad()">
+                        <button class="btn-chat-enviar" onclick="enviarMsgComunidad()">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -1556,6 +1963,8 @@
             renderizarDeudas();
             renderizarMensajes();
             iniciarMonitorReunion();
+            renderizarQuejas();
+            renderizarChatComunidad();
         }
 
         function ejecutarLogout() {
@@ -1882,10 +2291,6 @@
                 tile.insertBefore(av, tile.firstChild);
             }
 
-            // Añadir participantes simulados
-            agregarParticipanteSimulado('Admin', '👔');
-            setTimeout(()=>agregarParticipanteSimulado('Apto 202', '🏠'), 1500);
-
             // Temporizador sala
             segundosSala = 0;
             if (timerSala) clearInterval(timerSala);
@@ -1994,11 +2399,90 @@
         }
 
 
-        window.onload = function() {
-            if (localStorage.getItem('residente_apto')) {
-                renderizarDatosUsuario();
-            }
-        };
+
+
+        // =======================================
+        //  SECCIÓN QUEJAS
+        // =======================================
+        let tipoQuejaActivo = 'Ruido';
+        let quejasData = [];
+
+        function seleccionarTipoQueja(btn) {
+            document.querySelectorAll('.queja-tipo-btn').forEach(b => b.classList.remove('activo'));
+            btn.classList.add('activo');
+            tipoQuejaActivo = btn.textContent;
+        }
+
+        function enviarQueja() {
+            const texto = document.getElementById('queja-descripcion').value.trim();
+            if (!texto) { alert('Por favor describe la queja o sugerencia.'); return; }
+            const anonima = document.getElementById('queja-anonima').checked;
+            const autor = anonima ? 'Residente Anónimo' : (localStorage.getItem('residente_apto') || 'Residente');
+            const nueva = { autor, tipo: tipoQuejaActivo, texto, fecha: new Date().toISOString().split('T')[0], estado: 'pendiente', anonima };
+            quejasData.unshift(nueva);
+            renderizarQuejas();
+            document.getElementById('queja-descripcion').value = '';
+        }
+
+        function renderizarQuejas() {
+            const lista = document.getElementById('quejas-lista');
+            if (!lista) return;
+            lista.innerHTML = quejasData.map(q => {
+                const estadoLabel = q.estado === 'resuelta' ? 'Resuelta' : q.estado === 'en-proceso' ? 'En Proceso' : 'Pendiente';
+                const estadoClass = q.estado === 'resuelta' ? 'resuelta' : q.estado === 'en-proceso' ? 'en-proceso' : '';
+                return `
+                <div class="queja-card">
+                    <div class="qc-header">
+                        <div class="qc-autor">
+                            <i class="fa-solid fa-user-circle" style="color:var(--dorado)"></i>
+                            ${q.autor}
+                            <span class="queja-badge" style="background:#f1f5f9;color:var(--gris-texto);border-color:#e2e8f0;">${q.tipo}</span>
+                        </div>
+                        <span class="queja-badge ${estadoClass}">${estadoLabel}</span>
+                    </div>
+                    <div class="qc-texto">${q.texto}</div>
+                    <div class="qc-meta"><i class="fa-solid fa-calendar-alt" style="margin-right:4px;"></i>${q.fecha}</div>
+                </div>`;
+            }).join('');
+        }
+
+        // =======================================
+        //  CHAT DEL CONJUNTO
+        // =======================================
+        let chatComunidadMsgs = [];
+
+        function renderizarChatComunidad() {
+            const cont = document.getElementById('chat-comunidad-msgs');
+            if (!cont) return;
+            cont.innerHTML = '<div class="chat-sistema-msg">Bienvenido al chat del conjunto. Sé amable y respetuoso.</div>';
+            chatComunidadMsgs.forEach(m => {
+                const div = document.createElement('div');
+                div.className = `chat-burbuja ${m.propio ? 'propio' : 'ajeno'}`;
+                div.innerHTML = `
+                    ${!m.propio ? `<div class="cb-autor">${m.autor}</div>` : ''}
+                    <div class="cb-texto">${m.texto}</div>
+                    <div class="cb-hora">${m.hora}</div>
+                `;
+                cont.appendChild(div);
+            });
+            cont.scrollTop = cont.scrollHeight;
+        }
+
+        function enviarMsgComunidad() {
+            const inp = document.getElementById('chat-comunidad-input');
+            const txt = inp.value.trim();
+            if (!txt) return;
+            const hora = new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+            const autor = localStorage.getItem('residente_apto') || 'Tú';
+            chatComunidadMsgs.push({ autor, texto: txt, hora, propio: true });
+            renderizarChatComunidad();
+            inp.value = '';
+        }
+
+        function insertarEmoji(emoji) {
+            const inp = document.getElementById('chat-comunidad-input');
+            if (inp) { inp.value += emoji; inp.focus(); }
+        }
 
         function verificarArchivo(tipo) {
             const input = document.getElementById(`${tipo}-file`);

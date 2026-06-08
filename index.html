@@ -6,7 +6,7 @@
     <title>Conjunto Residencial Reserva de las Vacaciones</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2 family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
@@ -1470,6 +1470,29 @@
         .emoji-btn:hover { transform: scale(1.3); }
 
     </style>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, set, get, push, onValue, remove, update, runTransaction }
+            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyPLACEHOLDER_REEMPLAZA_CON_TU_API_KEY",
+            authDomain: "tu-proyecto.firebaseapp.com",
+            databaseURL: "https://tu-proyecto-default-rtdb.firebaseio.com",
+            projectId: "tu-proyecto",
+            storageBucket: "tu-proyecto.appspot.com",
+            messagingSenderId: "000000000000",
+            appId: "1:000000000000:web:0000000000000000"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db  = getDatabase(app);
+
+        window._fb = { db, ref, set, get, push, onValue, remove, update, runTransaction };
+        window.dispatchEvent(new Event('firebase-ready'));
+    </script>
 </head>
 <body>
 
@@ -1904,7 +1927,7 @@
 
         const adminEmails = [
             "troopermaskyt@gmail.com",
-            "floppabebefloppareciennacido@gmail.com",
+            "floppabebereciennacido@gmail.com",
             "gabomurcia09@gmail.com"
         ];
 

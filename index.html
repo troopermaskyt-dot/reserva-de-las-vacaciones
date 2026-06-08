@@ -9,35 +9,6 @@
     <link href="https://fonts.googleapis.com/css2 family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, set, get, push, onValue, remove, update, runTransaction }
-            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
-        // ══════════════════════════════════════════════════════
-        //  🔥 CONFIGURACIÓN FIREBASE — reemplaza con tus datos
-        //     si ya tienes un proyecto, o crea uno nuevo en
-        //     https://console.firebase.google.com
-        // ══════════════════════════════════════════════════════
-        const firebaseConfig = {
-            apiKey: "AIzaSyPLACEHOLDER_REEMPLAZA_CON_TU_API_KEY",
-            authDomain: "tu-proyecto.firebaseapp.com",
-            databaseURL: "https://tu-proyecto-default-rtdb.firebaseio.com",
-            projectId: "tu-proyecto",
-            storageBucket: "tu-proyecto.appspot.com",
-            messagingSenderId: "000000000000",
-            appId: "1:000000000000:web:0000000000000000"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db  = getDatabase(app);
-
-        // Exponer al scope global para que el código clásico pueda usarlo
-        window._fb = { db, ref, set, get, push, onValue, remove, update, runTransaction };
-        window.dispatchEvent(new Event('firebase-ready'));
-    </script>
-
     <style>
         /* --- ESTILOS GLOBALES (Paleta Estrato 6) --- */
         :root {
@@ -2039,15 +2010,11 @@
             }
 
             // Cargar secciones dinámicas
-            suscribirDeudas();     // 🔥 Firebase realtime
-            suscribirMensajes();   // 🔥 Firebase realtime
+            renderizarDeudas();
+            renderizarMensajes();
+            iniciarMonitorReunion();
             renderizarQuejas();
             renderizarChatComunidad();
-
-            // 🔔 Pedir permiso de notificaciones del navegador/celular
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission();
-            }
         }
 
         function toggleUserMenu() {
@@ -2074,15 +2041,17 @@
 
         function confirmarBorrarCuenta() {
             const email = localStorage.getItem('residente_email');
-            // Eliminar usuario del registro local
+            // Eliminar usuario del registro
             const usuarios = JSON.parse(localStorage.getItem('db_usuarios')) || {};
             if (email && usuarios[email]) {
                 delete usuarios[email];
                 localStorage.setItem('db_usuarios', JSON.stringify(usuarios));
             }
-            // Limpiar sesión
+            // Limpiar sesión y datos personales
             localStorage.removeItem('residente_apto');
             localStorage.removeItem('residente_email');
+            localStorage.removeItem('db_deudas');
+            localStorage.removeItem('db_mensajes');
             window.location.reload();
         }
 
@@ -2093,28 +2062,27 @@
         }
 
         // =======================================
-        //  DEUDAS  ── Firebase
+        //  DEUDAS
         // =======================================
-        let _deudasCache = [];
-        let _fbListenersDeudas = false;
+        const deudas_defecto = [];
 
-        function suscribirDeudas() {
-            if (_fbListenersDeudas || !window._fb) return;
-            _fbListenersDeudas = true;
-            const { db, ref, onValue } = window._fb;
-            onValue(ref(db, 'deudas'), snap => {
-                _deudasCache = [];
-                if (snap.exists()) snap.forEach(c => _deudasCache.push({ key: c.key, ...c.val() }));
-                renderizarDeudas();
-            });
+        function cargarDeudas() {
+            const guardadas = localStorage.getItem('db_deudas');
+            return guardadas ? JSON.parse(guardadas) : [];
+        }
+
+        function guardarDeudas(arr) {
+            localStorage.setItem('db_deudas', JSON.stringify(arr));
         }
 
         function renderizarDeudas() {
-            const deudas = _deudasCache;
+            const deudas = cargarDeudas();
             const esAdmin = localStorage.getItem('residente_apto') === 'Administrador General';
 
+            // Panel admin
             document.getElementById('panel-admin-deudas').style.display = esAdmin ? 'block' : 'none';
 
+            // Grid público
             const grid = document.getElementById('deudas-publicas-grid');
             grid.innerHTML = '';
             deudas.forEach(d => {
@@ -2131,10 +2099,11 @@
                 grid.appendChild(card);
             });
 
+            // Tabla admin
             const tbody = document.getElementById('tbody-deudas');
             if (tbody) {
                 tbody.innerHTML = '';
-                deudas.forEach(d => {
+                deudas.forEach((d, i) => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${d.tipo}</td>
@@ -2142,7 +2111,7 @@
                         <td>${d.responsable}</td>
                         <td>${d.vencimiento}</td>
                         <td><span style="color:${d.estado==='En mora'?'#ef4444':d.estado==='Pagado'?'#22c55e':'#f59e0b'};font-weight:700;">${d.estado}</span></td>
-                        <td><button class="btn-admin danger" onclick="eliminarDeuda('${d.key}')" style="padding:5px 10px; font-size:12px;"><i class="fa-solid fa-trash"></i></button></td>
+                        <td><button class="btn-admin danger" onclick="eliminarDeuda(${i})" style="padding:5px 10px; font-size:12px;"><i class="fa-solid fa-trash"></i></button></td>
                     `;
                     tbody.appendChild(tr);
                 });
@@ -2150,7 +2119,6 @@
         }
 
         function agregarDeuda() {
-            if (!window._fb) { alert('Conectando...'); return; }
             const tipo = document.getElementById('deuda-tipo').value;
             const monto = document.getElementById('deuda-monto').value;
             const responsable = document.getElementById('deuda-responsable').value;
@@ -2159,8 +2127,10 @@
 
             if (!tipo || !monto || !responsable) { alert('Completa los campos obligatorios.'); return; }
 
-            const { db, ref, push } = window._fb;
-            push(ref(db, 'deudas'), { tipo, monto, responsable, vencimiento: vencimiento || '-', estado });
+            const arr = cargarDeudas();
+            arr.push({ tipo, monto, responsable, vencimiento: vencimiento || '-', estado });
+            guardarDeudas(arr);
+            renderizarDeudas();
 
             document.getElementById('deuda-tipo').value = '';
             document.getElementById('deuda-monto').value = '';
@@ -2168,56 +2138,31 @@
             document.getElementById('deuda-vencimiento').value = '';
         }
 
-        function eliminarDeuda(key) {
+        function eliminarDeuda(i) {
             if (!confirm('¿Eliminar esta deuda?')) return;
-            const { db, ref, remove } = window._fb;
-            remove(ref(db, `deudas/${key}`));
+            const arr = cargarDeudas();
+            arr.splice(i, 1);
+            guardarDeudas(arr);
+            renderizarDeudas();
         }
 
         // =======================================
-        //  MENSAJES / CONVOCATORIAS  ── Firebase
+        //  MENSAJES / CONVOCATORIAS
         // =======================================
-
-        // Cache local para escuchas en tiempo real
-        let _mensajesCache = [];      // array con {key, ...datos}
-        let _aceptadosCache = {};     // { msgKey: { email_sanitized: true } }
-        let _fbListenersMsg = false;
-
-        function _sanitizeEmail(email) {
-            return (email || '').replace(/[.#$\[\]]/g, '_');
+        function cargarMensajes() {
+            const guardados = localStorage.getItem('db_mensajes');
+            return guardados ? JSON.parse(guardados) : [];
         }
 
-        function suscribirMensajes() {
-            if (_fbListenersMsg || !window._fb) return;
-            _fbListenersMsg = true;
-            const { db, ref, onValue } = window._fb;
-
-            // Escuchar mensajes
-            onValue(ref(db, 'mensajes'), snap => {
-                _mensajesCache = [];
-                if (snap.exists()) {
-                    snap.forEach(child => {
-                        _mensajesCache.push({ key: child.key, ...child.val() });
-                    });
-                }
-                renderizarMensajes();
-                iniciarMonitorReunion();
-                actualizarContadorPublicados();
-            });
-
-            // Escuchar aceptados de reunión
-            onValue(ref(db, 'aceptados'), snap => {
-                _aceptadosCache = snap.exists() ? snap.val() : {};
-                renderizarMensajes();
-            });
+        function guardarMensajes(arr) {
+            localStorage.setItem('db_mensajes', JSON.stringify(arr));
         }
 
         function renderizarMensajes() {
-            const msgs = _mensajesCache;
+            const msgs = cargarMensajes();
             const esAdmin = localStorage.getItem('residente_apto') === 'Administrador General';
             const lista = document.getElementById('mensajes-lista');
             const noMsg = document.getElementById('no-mensajes');
-            if (!lista) return;
 
             document.getElementById('panel-admin-mensajes').style.display = esAdmin ? 'block' : 'none';
             if (esAdmin) actualizarContadorPublicados();
@@ -2226,14 +2171,18 @@
             if (msgs.length === 0) { noMsg.style.display = 'block'; return; }
             noMsg.style.display = 'none';
 
-            const miEmail = _sanitizeEmail(localStorage.getItem('residente_email'));
+            const aceptados = JSON.parse(localStorage.getItem('db_aceptados') || '{}');
+            const miApto = localStorage.getItem('residente_apto');
 
-            // Mostrar más recientes primero
-            [...msgs].reverse().forEach(m => {
+            msgs.slice().reverse().forEach((m, idx) => {
+                const realIdx = msgs.length - 1 - idx;
                 const esReunion = m.tipo === 'reunion';
-                const asistentesObj = (_aceptadosCache[m.key]) || {};
-                const yaAcepto = !!asistentesObj[miEmail];
-                const totalAsistentes = Object.keys(asistentesObj).length;
+                const yaAcepto = aceptados[realIdx];
+
+                // Contar asistencias confirmadas para admin
+                const totalAceptados = Object.keys(aceptados).filter(k => String(k) === String(realIdx) && aceptados[k]).length;
+                // Contar todos los que aceptaron esa reunión
+                const contadorAsistentes = m.asistentes ? m.asistentes : 0;
 
                 const card = document.createElement('div');
                 card.className = 'mensaje-card';
@@ -2242,7 +2191,7 @@
                         <h4>${m.titulo}</h4>
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                             <span class="msg-badge ${m.tipo}">${m.tipo === 'reunion' ? 'Reunión' : m.tipo === 'urgente' ? 'Urgente' : 'General'}</span>
-                            ${esAdmin ? `<button onclick="eliminarMensaje('${m.key}')" style="background:#ef4444;color:white;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:600;" title="Eliminar mensaje"><i class="fa-solid fa-trash"></i> Eliminar</button>` : ''}
+                            ${esAdmin ? `<button onclick="eliminarMensaje(${realIdx})" style="background:#ef4444;color:white;border:none;border-radius:5px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:600;" title="Eliminar mensaje"><i class="fa-solid fa-trash"></i> Eliminar</button>` : ''}
                         </div>
                     </div>
                     <p>${m.contenido}</p>
@@ -2250,11 +2199,11 @@
                         <span><i class="fa-solid fa-user-tie"></i> Administración</span>
                         <span><i class="fa-solid fa-clock"></i> ${m.hora}</span>
                         ${esReunion && m.fechaReunion ? `<span><i class="fa-solid fa-calendar-check" style="color:#3b82f6;"></i> ${new Date(m.fechaReunion).toLocaleString('es-CO')}</span>` : ''}
-                        ${esReunion && esAdmin ? `<span style="color:var(--dorado);font-weight:700;"><i class="fa-solid fa-users"></i> ${totalAsistentes} confirmado(s)</span>` : ''}
+                        ${esReunion && esAdmin ? `<span style="color:var(--dorado);font-weight:700;"><i class="fa-solid fa-users"></i> ${m.asistentes || 0} confirmado(s)</span>` : ''}
                     </div>
                     ${esReunion ? `
                     <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-                        <button class="btn-aceptar-reunion ${yaAcepto?'aceptado':''}" onclick="aceptarReunion('${m.key}')" id="btn-acepta-${m.key}">
+                        <button class="btn-aceptar-reunion ${yaAcepto?'aceptado':''}" onclick="aceptarReunion(${realIdx})" id="btn-acepta-${realIdx}">
                             <i class="fa-solid ${yaAcepto?'fa-check':'fa-calendar-check'}"></i>
                             ${yaAcepto ? 'Confirmado' : 'Aceptar asistir a la reunión'}
                         </button>
@@ -2266,11 +2215,21 @@
             });
         }
 
-        function eliminarMensaje(key) {
+        function eliminarMensaje(idx) {
             if (!confirm('¿Eliminar este mensaje para todos los residentes?')) return;
-            const { db, ref, remove } = window._fb;
-            remove(ref(db, `mensajes/${key}`));
-            remove(ref(db, `aceptados/${key}`));
+            const arr = cargarMensajes();
+            arr.splice(idx, 1);
+            // Ajustar índices de aceptados
+            const aceptados = JSON.parse(localStorage.getItem('db_aceptados') || '{}');
+            const nuevosAceptados = {};
+            Object.keys(aceptados).forEach(k => {
+                const ki = parseInt(k);
+                if (ki < idx) nuevosAceptados[ki] = aceptados[k];
+                else if (ki > idx) nuevosAceptados[ki - 1] = aceptados[k];
+            });
+            localStorage.setItem('db_aceptados', JSON.stringify(nuevosAceptados));
+            guardarMensajes(arr);
+            renderizarMensajes();
         }
 
         function toggleFechaReunion() {
@@ -2279,7 +2238,6 @@
         }
 
         function enviarMensaje() {
-            if (!window._fb) { alert('Conectando con Firebase, intenta en un momento.'); return; }
             const titulo = document.getElementById('msg-titulo').value.trim();
             const tipo = document.getElementById('msg-tipo').value;
             const fechaReunion = document.getElementById('msg-fecha-reunion').value;
@@ -2288,12 +2246,19 @@
             if (!titulo || !contenido) { alert('Escribe un título y el contenido del mensaje.'); return; }
             if (tipo === 'reunion' && !fechaReunion) { alert('Selecciona la fecha y hora de la reunión.'); return; }
 
-            const { db, ref, push } = window._fb;
-            push(ref(db, 'mensajes'), {
-                titulo, tipo, contenido,
+            const arr = cargarMensajes();
+            arr.push({
+                titulo,
+                tipo,
+                contenido,
                 fechaReunion: fechaReunion || null,
                 hora: new Date().toLocaleString('es-CO'),
+                asistentes: 0,
             });
+            guardarMensajes(arr);
+            renderizarMensajes();
+            iniciarMonitorReunion();
+            actualizarContadorPublicados();
 
             document.getElementById('msg-titulo').value = '';
             document.getElementById('msg-contenido').value = '';
@@ -2312,20 +2277,22 @@
         function actualizarContadorPublicados() {
             const el = document.getElementById('msg-contador-publicados');
             if (!el) return;
-            const total = _mensajesCache.length;
+            const total = cargarMensajes().length;
             el.textContent = total > 0 ? `${total} mensaje(s) publicado(s)` : '';
         }
 
-        function aceptarReunion(key) {
-            if (!window._fb) return;
-            const miEmail = _sanitizeEmail(localStorage.getItem('residente_email'));
-            const miApto = localStorage.getItem('residente_apto') || 'Residente';
-            // Ya aceptó?
-            const asistentesObj = (_aceptadosCache[key]) || {};
-            if (asistentesObj[miEmail]) return;
-
-            const { db, ref, set } = window._fb;
-            set(ref(db, `aceptados/${key}/${miEmail}`), miApto);
+        function aceptarReunion(idx) {
+            const aceptados = JSON.parse(localStorage.getItem('db_aceptados') || '{}');
+            if (aceptados[idx]) return;
+            aceptados[idx] = true;
+            localStorage.setItem('db_aceptados', JSON.stringify(aceptados));
+            // Incrementar contador de asistentes en el mensaje
+            const arr = cargarMensajes();
+            if (arr[idx]) {
+                arr[idx].asistentes = (arr[idx].asistentes || 0) + 1;
+                guardarMensajes(arr);
+            }
+            renderizarMensajes();
         }
 
         // =======================================
@@ -2335,7 +2302,6 @@
         let timerMonitor = null;
         let timerSala = null;
         let segundosSala = 0;
-        let estaEnReunion = false; // 🔕 Silencia notifs cuando está dentro de la sala
 
         function iniciarMonitorReunion() {
             if (timerMonitor) clearInterval(timerMonitor);
@@ -2344,60 +2310,23 @@
         }
 
         function verificarProximaReunion() {
-            const msgs = _mensajesCache;
+            const msgs = cargarMensajes();
             const ahora = Date.now();
-            const miEmail = _sanitizeEmail(localStorage.getItem('residente_email'));
-            msgs.forEach(m => {
+            msgs.forEach((m, idx) => {
                 if (m.tipo !== 'reunion' || !m.fechaReunion) return;
-                const asistentesObj = (_aceptadosCache[m.key]) || {};
-                if (!asistentesObj[miEmail]) return; // Solo si aceptó
+                const aceptados = JSON.parse(localStorage.getItem('db_aceptados') || '{}');
+                if (!aceptados[idx]) return; // Solo si aceptó
                 const tsReunion = new Date(m.fechaReunion).getTime();
                 const diff = tsReunion - ahora;
                 // Mostrar notif 2 minutos antes o si ya pasó (hasta 10 min después)
                 if (diff <= 120000 && diff >= -600000) {
                     reunionActivaData = m;
                     mostrarNotifReunion(m);
-                    // 🔔 Notificación nativa del navegador/celular si no está en sala
-                    if (!estaEnReunion) {
-                        enviarNotifNativa(m, diff);
-                    }
                 }
             });
         }
 
-        // 🔔 Notificación push nativa (aparece en el sistema operativo / celular)
-        let notifNativaEnviada = {};
-        function enviarNotifNativa(m, diff) {
-            const clave = m.titulo + m.fechaReunion;
-            if (notifNativaEnviada[clave]) return; // No repetir la misma notif
-            if (!('Notification' in window)) return;
-            if (Notification.permission !== 'granted') return;
-
-            notifNativaEnviada[clave] = true;
-            const titulo = diff < 0
-                ? `⚠️ La reunión ya empezó: ${m.titulo}`
-                : `🔔 Reunión en 2 min: ${m.titulo}`;
-            const cuerpo = diff < 0
-                ? `Habías confirmado asistencia. La reunión inició hace ${Math.abs(Math.round(diff/60000))} min. Entra ahora.`
-                : `Empieza en menos de 2 minutos. ${new Date(m.fechaReunion).toLocaleString('es-CO')}`;
-
-            const notif = new Notification(titulo, {
-                body: cuerpo,
-                icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827301.png',
-                badge: 'https://cdn-icons-png.flaticon.com/512/1827/1827301.png',
-                tag: clave,
-                requireInteraction: true // Se queda hasta que el usuario la cierre
-            });
-            notif.onclick = () => {
-                window.focus();
-                document.getElementById('nav-mensajes')?.click();
-                notif.close();
-            };
-        }
-
         function mostrarNotifReunion(m) {
-            // 🔕 No mostrar la notificación flotante si el usuario ya está dentro de la sala
-            if (estaEnReunion) return;
             const notif = document.getElementById('notif-reunion');
             document.getElementById('notif-texto').innerText = `"${m.titulo}" — ${new Date(m.fechaReunion).toLocaleString('es-CO')}. Haz clic para entrar.`;
             notif.style.display = 'block';
@@ -2416,7 +2345,6 @@
 
         async function entrarReunion() {
             cerrarNotif();
-            estaEnReunion = true; // 🔕 Silenciar notificaciones flotantes dentro de la sala
             const sala = document.getElementById('sala-reunion');
             sala.classList.add('activa');
 
@@ -2475,7 +2403,6 @@
         }
 
         function salirReunion() {
-            estaEnReunion = false; // 🔔 Reactivar notificaciones al salir
             const sala = document.getElementById('sala-reunion');
             sala.classList.remove('activa');
             if (streamLocal) {

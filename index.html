@@ -1904,7 +1904,7 @@
 
         const adminEmails = [
             "troopermaskyt@gmail.com",
-            "floppabebefloppareciennacido@gmail.com",
+            "floppabebereciennacido@gmail.com",
             "gabomurcia09@gmail.com"
         ];
 
@@ -2015,6 +2015,11 @@
             iniciarMonitorReunion();
             renderizarQuejas();
             renderizarChatComunidad();
+
+            // 🔔 Pedir permiso de notificaciones del navegador/celular
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
         }
 
         function toggleUserMenu() {
@@ -2302,6 +2307,7 @@
         let timerMonitor = null;
         let timerSala = null;
         let segundosSala = 0;
+        let estaEnReunion = false; // 🔕 Silencia notifs cuando está dentro de la sala
 
         function iniciarMonitorReunion() {
             if (timerMonitor) clearInterval(timerMonitor);
@@ -2322,11 +2328,47 @@
                 if (diff <= 120000 && diff >= -600000) {
                     reunionActivaData = m;
                     mostrarNotifReunion(m);
+                    // 🔔 Notificación nativa del navegador/celular si no está en sala
+                    if (!estaEnReunion) {
+                        enviarNotifNativa(m, diff);
+                    }
                 }
             });
         }
 
+        // 🔔 Notificación push nativa (aparece en el sistema operativo / celular)
+        let notifNativaEnviada = {};
+        function enviarNotifNativa(m, diff) {
+            const clave = m.titulo + m.fechaReunion;
+            if (notifNativaEnviada[clave]) return; // No repetir la misma notif
+            if (!('Notification' in window)) return;
+            if (Notification.permission !== 'granted') return;
+
+            notifNativaEnviada[clave] = true;
+            const titulo = diff < 0
+                ? `⚠️ La reunión ya empezó: ${m.titulo}`
+                : `🔔 Reunión en 2 min: ${m.titulo}`;
+            const cuerpo = diff < 0
+                ? `Habías confirmado asistencia. La reunión inició hace ${Math.abs(Math.round(diff/60000))} min. Entra ahora.`
+                : `Empieza en menos de 2 minutos. ${new Date(m.fechaReunion).toLocaleString('es-CO')}`;
+
+            const notif = new Notification(titulo, {
+                body: cuerpo,
+                icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827301.png',
+                badge: 'https://cdn-icons-png.flaticon.com/512/1827/1827301.png',
+                tag: clave,
+                requireInteraction: true // Se queda hasta que el usuario la cierre
+            });
+            notif.onclick = () => {
+                window.focus();
+                document.getElementById('nav-mensajes')?.click();
+                notif.close();
+            };
+        }
+
         function mostrarNotifReunion(m) {
+            // 🔕 No mostrar la notificación flotante si el usuario ya está dentro de la sala
+            if (estaEnReunion) return;
             const notif = document.getElementById('notif-reunion');
             document.getElementById('notif-texto').innerText = `"${m.titulo}" — ${new Date(m.fechaReunion).toLocaleString('es-CO')}. Haz clic para entrar.`;
             notif.style.display = 'block';
@@ -2345,6 +2387,7 @@
 
         async function entrarReunion() {
             cerrarNotif();
+            estaEnReunion = true; // 🔕 Silenciar notificaciones flotantes dentro de la sala
             const sala = document.getElementById('sala-reunion');
             sala.classList.add('activa');
 
@@ -2403,6 +2446,7 @@
         }
 
         function salirReunion() {
+            estaEnReunion = false; // 🔔 Reactivar notificaciones al salir
             const sala = document.getElementById('sala-reunion');
             sala.classList.remove('activa');
             if (streamLocal) {

@@ -1473,19 +1473,18 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getDatabase, ref, set, get, push, onValue, remove, update, runTransaction }
-            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        import { initializeApp } from "firebase/app";
+        import { getAnalytics } from "firebase/analytics";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyPLACEHOLDER_REEMPLAZA_CON_TU_API_KEY",
-            authDomain: "tu-proyecto.firebaseapp.com",
-            databaseURL: "https://tu-proyecto-default-rtdb.firebaseio.com",
-            projectId: "tu-proyecto",
-            storageBucket: "tu-proyecto.appspot.com",
-            messagingSenderId: "000000000000",
-            appId: "1:000000000000:web:0000000000000000"
-        };
+            apiKey: "AIzaSyAfgGWOlj-omnGl9LgvmUQaYeVvoQNqWGk",
+            authDomain: "reserva-de-las-vacaciones.firebaseapp.com",
+            projectId: "reserva-de-las-vacaciones",
+            storageBucket: "reserva-de-las-vacaciones.firebasestorage.app",
+            messagingSenderId: "677643256182",
+            appId: "1:677643256182:web:6c3e75a4cfb0bcb881fa57",
+            measurementId: "G-7JC5VB259G"
+};
 
         const app = initializeApp(firebaseConfig);
         const db  = getDatabase(app);
@@ -1927,7 +1926,7 @@
 
         const adminEmails = [
             "troopermaskyt@gmail.com",
-            "floppabebefloppareciennacido@gmail.com",
+            "floppabebereciennacido@gmail.com",
             "gabomurcia09@gmail.com"
         ];
 

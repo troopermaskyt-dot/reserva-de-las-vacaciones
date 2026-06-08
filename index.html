@@ -223,6 +223,51 @@
             font-size: 14px;
         }
 
+        .user-menu-trigger {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .user-menu-trigger:hover { background: rgba(255,255,255,0.1); }
+
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            min-width: 180px;
+            overflow: hidden;
+            z-index: 999;
+            border: 1px solid #e2e8f0;
+        }
+
+        .user-dropdown.abierto { display: block; }
+
+        .user-dropdown-item {
+            padding: 12px 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.15s;
+        }
+
+        .user-dropdown-item:hover { background: #f8fafc; }
+        .user-dropdown-item.danger { color: #ef4444; }
+        .user-dropdown-item.danger:hover { background: #fef2f2; }
+
         /* --- SECCIÓN HERO --- */
         .hero {
             background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.6)), url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
@@ -1475,9 +1520,20 @@
                     <li><a href="#banca">Centro Financiero</a></li>
                     <li><a href="#quejas">Quejas</a></li>
                     <li><a href="#chat-conjunto">Chat</a></li>
-                    <li class="user-info-nav">
-                        <i class="fa-solid fa-user-tie"></i> <span id="nav-user-display">Cargando...</span>
-                        <i class="fa-solid fa-right-from-bracket btn-logout" onclick="ejecutarLogout()" title="Cerrar Sesión"></i>
+                    <li class="user-info-nav" style="position:relative;">
+                        <div class="user-menu-trigger" onclick="toggleUserMenu()">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <span id="nav-user-display">Cargando...</span>
+                            <i class="fa-solid fa-chevron-down" style="font-size:10px; margin-left:4px;"></i>
+                        </div>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <div class="user-dropdown-item" onclick="ejecutarLogout()">
+                                <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                            </div>
+                            <div class="user-dropdown-item danger" onclick="mostrarModalBorrar()">
+                                <i class="fa-solid fa-trash"></i> Borrar cuenta
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -1848,12 +1904,12 @@
 
         const adminEmails = [
             "troopermaskyt@gmail.com",
-            "floppabebefloppareciennacido@gmail.com",
+            "floppabebereciennacido@gmail.com",
             "gabomurcia09@gmail.com"
         ];
 
         const baseDatosSaldosDefecto = {
-            "Apto 002 - Torre 2": { saldo: "$2.000.000 COP", detalle: "Expedido el 01/06/2026 - Administración al día." },
+        "Apto 002 - Torre 2": { saldo: "$2.000.000 COP", detalle: "Expedido el 01/06/2026 - Administración al día." },
             "Apto 202 - Torre 3": { saldo: "$2.100.000 COP", detalle: "Incluye cobro extraordinario de mantenimiento." },
             "Apto 302 - Torre 3": { saldo: "$1.000.111.000.000.000.000 COP", detalle: "Cuenta en equilibrio uniforme." },
             "Apto 001 - Torre 2": { saldo: "$0 COP", detalle: "Saldo pendiente acumulado del periodo anterior." },
@@ -1967,6 +2023,44 @@
             renderizarChatComunidad();
         }
 
+        function toggleUserMenu() {
+            document.getElementById('user-dropdown').classList.toggle('abierto');
+        }
+
+        document.addEventListener('click', function(e) {
+            const trigger = document.querySelector('.user-menu-trigger');
+            const dropdown = document.getElementById('user-dropdown');
+            if (dropdown && trigger && !trigger.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('abierto');
+            }
+        });
+
+        function mostrarModalBorrar() {
+            document.getElementById('user-dropdown').classList.remove('abierto');
+            const modal = document.getElementById('modal-borrar-cuenta');
+            modal.style.display = 'flex';
+        }
+
+        function cerrarModalBorrar() {
+            document.getElementById('modal-borrar-cuenta').style.display = 'none';
+        }
+
+        function confirmarBorrarCuenta() {
+            const email = localStorage.getItem('residente_email');
+            // Eliminar usuario del registro
+            const usuarios = JSON.parse(localStorage.getItem('db_usuarios')) || {};
+            if (email && usuarios[email]) {
+                delete usuarios[email];
+                localStorage.setItem('db_usuarios', JSON.stringify(usuarios));
+            }
+            // Limpiar sesión y datos personales
+            localStorage.removeItem('residente_apto');
+            localStorage.removeItem('residente_email');
+            localStorage.removeItem('db_deudas');
+            localStorage.removeItem('db_mensajes');
+            window.location.reload();
+        }
+
         function ejecutarLogout() {
             localStorage.removeItem('residente_apto');
             localStorage.removeItem('residente_email');
@@ -1976,18 +2070,11 @@
         // =======================================
         //  DEUDAS
         // =======================================
-        const deudas_defecto = [
-            { tipo: "💧 Agua", monto: "$320.000 COP", responsable: "Conjunto General", vencimiento: "30/06/2026", estado: "Pendiente" },
-            { tipo: "⚡ Luz / Energía", monto: "$1.450.000 COP", responsable: "Conjunto General", vencimiento: "25/06/2026", estado: "En mora" },
-            { tipo: "🔥 Gas", monto: "$280.000 COP", responsable: "Apto 202 - Torre 3", vencimiento: "28/06/2026", estado: "Pendiente" },
-            { tipo: "🌐 Internet", monto: "$180.000 COP", responsable: "Conjunto General", vencimiento: "15/06/2026", estado: "Pagado" },
-            { tipo: "🏠 Administración", monto: "$950.000 COP", responsable: "Apto 302 - Torre 3", vencimiento: "01/07/2026", estado: "En mora" },
-            { tipo: "🌿 Mantenimiento", monto: "$400.000 COP", responsable: "Conjunto General", vencimiento: "10/07/2026", estado: "Pendiente" },
-        ];
+        const deudas_defecto = [];
 
         function cargarDeudas() {
             const guardadas = localStorage.getItem('db_deudas');
-            return guardadas ? JSON.parse(guardadas) : [...deudas_defecto];
+            return guardadas ? JSON.parse(guardadas) : [];
         }
 
         function guardarDeudas(arr) {
@@ -2532,5 +2619,26 @@
             window.open(`https://api.whatsapp.com/send?phone=573024058615&text=${encodeURIComponent(textoFinal)}`, '_blank');
         }
     </script>
+        <!-- Modal borrar cuenta -->
+        <div id="modal-borrar-cuenta" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+            <div style="background:white; border-radius:16px; padding:40px; max-width:400px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+                <div style="width:64px;height:64px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+                    <i class="fa-solid fa-trash" style="font-size:26px;color:#ef4444;"></i>
+                </div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:#0f172a;margin-bottom:10px;">¿Borrar tu cuenta?</h3>
+                <p style="color:#64748b;font-size:14px;line-height:1.6;margin-bottom:24px;">
+                    Esta acción eliminará todos tus datos del dispositivo (mensajes, deudas, sesión). <strong>No se puede deshacer.</strong>
+                </p>
+                <div style="display:flex;gap:12px;justify-content:center;">
+                    <button onclick="cerrarModalBorrar()" style="padding:11px 24px;border:2px solid #e2e8f0;border-radius:8px;background:white;font-family:'Montserrat',sans-serif;font-weight:600;font-size:13px;cursor:pointer;color:#64748b;">
+                        Cancelar
+                    </button>
+                    <button onclick="confirmarBorrarCuenta()" style="padding:11px 24px;border:none;border-radius:8px;background:#ef4444;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;cursor:pointer;color:white;">
+                        Sí, borrar cuenta
+                    </button>
+                </div>
+            </div>
+        </div>
+
 </body>
 </html>

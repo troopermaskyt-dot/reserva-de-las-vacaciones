@@ -658,6 +658,20 @@ function loadPreview() {
 }
 
 
+function openSiteInNewTab() {
+  if (!currentSite) return;
+  var html = buildPreviewHTML(currentSite);
+  var blob = new Blob([html], { type: 'text/html' });
+  var url = URL.createObjectURL(blob);
+  var newTab = window.open(url, '_blank');
+  // Liberar el blob después de que la pestaña cargue
+  if (newTab) {
+    newTab.addEventListener('load', function() {
+      setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+    });
+  }
+}
+
 function setPreviewSize(width, height, btn) {
   document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');

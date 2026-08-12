@@ -17,7 +17,7 @@
         // ══════════════════════════════════════════════════════
         //  🔥 CONFIGURACIÓN FIREBASE
         //  Entra a https://console.firebase.google.com
-        //  Crea un proyecto → Realtime Database → copia tu config aquí
+        //  Crea un proyecto → Realtime Database → pega tu config aquí
         // ══════════════════════════════════════════════════════
         const firebaseConfig = {
             apiKey: "REEMPLAZA_apiKey",
@@ -1496,6 +1496,91 @@
 
         .emoji-btn:hover { transform: scale(1.3); }
 
+
+        /* ===== PANEL ADMIN EN SALA ===== */
+        #admin-sala-panel {
+            display: none;
+            background: linear-gradient(135deg, rgba(180,140,44,0.18), rgba(15,23,42,0.97));
+            border-top: 2px solid var(--dorado);
+            padding: 12px 24px;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        #admin-sala-panel span.admin-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--dorado);
+        }
+        .btn-admin-sala {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.18);
+            color: white;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .btn-admin-sala:hover { background: rgba(255,255,255,0.16); }
+        .btn-admin-sala.danger { border-color: #ef4444; color: #ef4444; }
+        .btn-admin-sala.danger:hover { background: rgba(239,68,68,0.18); }
+
+        /* Modal participantes */
+        #modal-participantes {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.72);
+            z-index: 4000;
+            align-items: center;
+            justify-content: center;
+        }
+        #modal-participantes.abierto { display: flex; }
+        .modal-part-box {
+            background: #0f172a;
+            border: 1px solid rgba(180,140,44,0.4);
+            border-radius: 14px;
+            padding: 28px;
+            width: 340px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+        .modal-part-box h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--dorado);
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+        .part-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .part-row:last-child { border-bottom: none; }
+        .part-name { color: white; font-size: 13px; font-weight: 600; }
+        .part-actions { display: flex; gap: 6px; }
+        .btn-part {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: white; padding: 5px 10px;
+            border-radius: 5px; font-size: 11px;
+            cursor: pointer; font-family: 'Montserrat', sans-serif;
+            font-weight: 600; transition: background 0.15s;
+        }
+        .btn-part:hover { background: rgba(255,255,255,0.14); }
+        .btn-part.kick { border-color: #ef4444; color: #ef4444; }
+        .btn-part.kick:hover { background: rgba(239,68,68,0.18); }
+
     </style>
 </head>
 <body>
@@ -1916,12 +2001,38 @@
             <button class="ctrl-btn" onclick="toggleChat()" title="Chat" style="font-size:16px;">
                 <i class="fa-solid fa-message"></i>
             </button>
-            <button class="ctrl-btn" onclick="toggleParticipantes()" title="Participantes">
+            <button class="ctrl-btn" onclick="abrirModalParticipantes()" title="Participantes">
                 <i class="fa-solid fa-users"></i>
             </button>
             <button class="ctrl-btn salir" onclick="salirReunion()" title="Salir de la reunión">
                 <i class="fa-solid fa-phone-slash"></i>
             </button>
+        </div>
+
+        <!-- ⭐ PANEL EXCLUSIVO ADMIN DENTRO DE LA SALA ⭐ -->
+        <div id="admin-sala-panel">
+            <span class="admin-label"><i class="fa-solid fa-shield-halved" style="margin-right:5px;"></i>Admin</span>
+            <button class="btn-admin-sala" onclick="adminSilenciarTodos()">
+                <i class="fa-solid fa-microphone-slash"></i> Silenciar a todos
+            </button>
+            <button class="btn-admin-sala" onclick="adminAnuncio()">
+                <i class="fa-solid fa-bullhorn"></i> Anuncio en chat
+            </button>
+            <button class="btn-admin-sala" onclick="abrirModalParticipantes()">
+                <i class="fa-solid fa-users-gear"></i> Gestionar participantes
+            </button>
+            <button class="btn-admin-sala danger" onclick="adminTerminarReunion()">
+                <i class="fa-solid fa-circle-stop"></i> Terminar reunión
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal participantes (admin) -->
+    <div id="modal-participantes">
+        <div class="modal-part-box">
+            <h3><i class="fa-solid fa-users" style="margin-right:8px;"></i>Participantes en la sala</h3>
+            <div id="lista-participantes-modal"></div>
+            <button onclick="cerrarModalParticipantes()" style="margin-top:16px; width:100%; padding:10px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:8px; color:white; font-family:'Montserrat',sans-serif; font-weight:600; cursor:pointer; font-size:13px;">Cerrar</button>
         </div>
     </div>
 
@@ -2036,11 +2147,27 @@
                 document.getElementById('saldo-valor').style.color = "var(--blanco)";
             }
 
+            // Mostrar paneles admin inmediatamente según rol
+            const _esAdmin = apto === 'Administrador General';
+            const _panelDeudas = document.getElementById('panel-admin-deudas');
+            const _panelMensajes = document.getElementById('panel-admin-mensajes');
+            if (_panelDeudas) _panelDeudas.style.display = _esAdmin ? 'block' : 'none';
+            if (_panelMensajes) _panelMensajes.style.display = _esAdmin ? 'block' : 'none';
+
             // Cargar secciones dinámicas
-            suscribirDeudas();     // 🔥 Firebase — datos compartidos en tiempo real
-            suscribirMensajes();   // 🔥 Firebase — mensajes y reuniones compartidos
             renderizarQuejas();
             renderizarChatComunidad();
+
+            // 🔥 Firebase: suscribir cuando esté listo (o ya lo está)
+            if (window._fb) {
+                suscribirDeudas();
+                suscribirMensajes();
+            } else {
+                window.addEventListener('firebase-ready', () => {
+                    suscribirDeudas();
+                    suscribirMensajes();
+                }, { once: true });
+            }
 
             // 🔔 Pedir permiso de notificaciones del navegador/celular
             if ('Notification' in window && Notification.permission === 'default') {
@@ -2097,7 +2224,11 @@
         let _fbListenersDeudas = false;
 
         function suscribirDeudas() {
-            if (_fbListenersDeudas || !window._fb) return;
+            if (_fbListenersDeudas || !window._fb) {
+                // Firebase no listo aún: igual mostrar paneles admin
+                renderizarDeudas();
+                return;
+            }
             _fbListenersDeudas = true;
             const { db, ref, onValue } = window._fb;
             onValue(ref(db, 'deudas'), snap => {
@@ -2111,8 +2242,9 @@
             const deudas = _deudasCache;
             const esAdmin = localStorage.getItem('residente_apto') === 'Administrador General';
 
-            // Panel admin
-            document.getElementById('panel-admin-deudas').style.display = esAdmin ? 'block' : 'none';
+            // Panel admin — siempre mostrar si es admin (ya se mostró al login, esto lo mantiene)
+            const _pd = document.getElementById('panel-admin-deudas');
+            if (_pd) _pd.style.display = esAdmin ? 'block' : 'none';
 
             // Grid público
             const grid = document.getElementById('deudas-publicas-grid');
@@ -2187,7 +2319,10 @@
         }
 
         function suscribirMensajes() {
-            if (_fbListenersMsg || !window._fb) return;
+            if (_fbListenersMsg || !window._fb) {
+                renderizarMensajes();
+                return;
+            }
             _fbListenersMsg = true;
             const { db, ref, onValue } = window._fb;
             onValue(ref(db, 'mensajes'), snap => {
@@ -2210,7 +2345,8 @@
             const noMsg = document.getElementById('no-mensajes');
             if (!lista) return;
 
-            document.getElementById('panel-admin-mensajes').style.display = esAdmin ? 'block' : 'none';
+            const _pm = document.getElementById('panel-admin-mensajes');
+            if (_pm) _pm.style.display = esAdmin ? 'block' : 'none';
             if (esAdmin) actualizarContadorPublicados();
 
             lista.innerHTML = '';
@@ -2412,6 +2548,7 @@
 
             document.getElementById('tile-local-nombre').innerText = localStorage.getItem('residente_apto') || 'Tú';
             document.getElementById('chat-hora-inicio').innerText = new Date().toLocaleTimeString('es-CO');
+            mostrarPanelAdminSala(); // ⭐ Panel admin si corresponde
 
             // Iniciar video/audio local
             try {
@@ -2510,8 +2647,85 @@
         }
 
         function toggleParticipantes() {
+            abrirModalParticipantes();
+        }
+
+        // ===== CONTROLES ADMIN EN SALA =====
+        function mostrarPanelAdminSala() {
+            const esAdmin = localStorage.getItem('residente_apto') === 'Administrador General';
+            const panel = document.getElementById('admin-sala-panel');
+            if (panel) panel.style.display = esAdmin ? 'flex' : 'none';
+        }
+
+        function adminSilenciarTodos() {
+            addChatMsg('🛡️ Admin', '🔇 El administrador ha silenciado a todos los participantes.', true);
+            if (streamLocal) streamLocal.getAudioTracks().forEach(t => { t.enabled = false; });
+            microActivo = false;
+            const btn = document.getElementById('btn-micro');
+            if (btn) {
+                btn.className = 'ctrl-btn inactivo';
+                btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+            }
+            document.getElementById('tile-local-muted').style.display = 'inline';
+        }
+
+        function adminAnuncio() {
+            const texto = prompt('Escribe el anuncio para todos los participantes:');
+            if (!texto) return;
+            addChatMsg('📢 Administración', texto, true);
+        }
+
+        function adminTerminarReunion() {
+            if (!confirm('¿Terminar la reunión para todos? Cerrará la sala.')) return;
+            addChatMsg('Sistema', '🔴 El administrador ha terminado la reunión.', true);
+            setTimeout(() => salirReunion(), 1800);
+        }
+
+        function abrirModalParticipantes() {
+            const esAdmin = localStorage.getItem('residente_apto') === 'Administrador General';
+            const lista = document.getElementById('lista-participantes-modal');
+            const tiles = document.getElementById('video-area').querySelectorAll('.video-tile');
+            lista.innerHTML = '';
+            tiles.forEach(tile => {
+                const nombre = tile.querySelector('.tile-name')?.innerText || 'Participante';
+                const esTu = tile.id === 'tile-local';
+                const row = document.createElement('div');
+                row.className = 'part-row';
+                row.innerHTML = `
+                    <span class="part-name">👤 ${nombre} ${esTu ? '<span style="color:var(--dorado);font-size:10px;">(Tú)</span>' : ''}</span>
+                    <div class="part-actions">
+                        ${esAdmin && !esTu ? `
+                        <button class="btn-part" onclick="adminMutearParticipante('${nombre}', this)"><i class="fa-solid fa-microphone-slash"></i></button>
+                        <button class="btn-part kick" onclick="adminExpulsarParticipante('${nombre}', this)"><i class="fa-solid fa-user-slash"></i> Exp.</button>
+                        ` : ''}
+                    </div>
+                `;
+                lista.appendChild(row);
+            });
+            document.getElementById('modal-participantes').classList.add('abierto');
+        }
+
+        function cerrarModalParticipantes() {
+            document.getElementById('modal-participantes').classList.remove('abierto');
+        }
+
+        function adminMutearParticipante(nombre, btn) {
+            addChatMsg('🛡️ Admin', `🔇 ${nombre} fue silenciado por el administrador.`, true);
+            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+            btn.style.color = 'var(--verde-whatsapp)';
+            btn.disabled = true;
+        }
+
+        function adminExpulsarParticipante(nombre, btn) {
+            if (!confirm(`¿Expulsar a ${nombre} de la reunión?`)) return;
+            const tiles = document.getElementById('video-area').querySelectorAll('.video-tile');
+            tiles.forEach(tile => {
+                if (tile.querySelector('.tile-name')?.innerText === nombre) tile.remove();
+            });
+            addChatMsg('Sistema', `${nombre} fue removido de la reunión por el administrador.`, true);
             const count = document.getElementById('video-area').querySelectorAll('.video-tile').length;
-            alert(`Participantes en la reunión: ${count}`);
+            document.getElementById('participantes-count').innerText = `${count} participante(s)`;
+            cerrarModalParticipantes();
         }
 
         function enviarChat() {
